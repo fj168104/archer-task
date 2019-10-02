@@ -58,12 +58,41 @@
         <Button type="primary" :loading="submitLoading" @click="handleSubmit">提交</Button>
       </div>
     </Modal>
+
+    <Modal :closable="false"
+           @on-cancel="handleClose"
+           v-model="graphVisible"
+           :mask-closable="true"
+           footer-hide
+           :fullscreen="true">
+      <div slot="header">
+        <div class="ivu-modal-header-inner">mxgraph 任务设计</div>
+        <a @click="handleClose" class="ivu-modal-close">
+          <Icon type="ios-close" size="31" class="ivu-icon-ios-close"/>
+        </a>
+      </div>
+
+      <div style="position:relative;height: 100%;">
+        <iframe
+                id="iframe"
+                :src="modelerUrl"
+                frameborder="0"
+                width="100%"
+                height="100%"
+                scrolling="auto"
+        ></iframe>
+        <Spin fix size="large" v-if="modelerLoading"></Spin>
+      </div>
+
+    </Modal>
+
   </div>
 </template>
 
 <script>
 export default {
-  name: "simple-table",
+  name: "graph-demo",
+
   data() {
     return {
       loading: true, // 表单加载状态
@@ -71,7 +100,14 @@ export default {
       sortType: "desc", // 排序方式
       modalType: 0, // 添加或编辑标识
       modalVisible: false, // 添加或编辑显示
+      graphVisible: false,
+      modelerLoading: false,
+
       modalTitle: "", // 添加或编辑标题
+
+      domain: "http://127.0.0.1:8888",
+      modelerUrl: "",
+
       form: {
         // 添加或编辑表单对象初始化数据
         name: ""
@@ -136,6 +172,27 @@ export default {
                 },
                 "编辑"
               ),
+
+              h(
+                      "Button",
+                      {
+                        props: {
+                          type: "primary",
+                          size: "small",
+                          icon: "ios-create-outline"
+                        },
+                        style: {
+                          marginRight: "5px"
+                        },
+                        on: {
+                          click: () => {
+                            this.draw(params.row);
+                          }
+                        }
+                      },
+                      "设计"
+              ),
+
               h(
                 "Button",
                 {
@@ -151,7 +208,8 @@ export default {
                   }
                 },
                 "删除"
-              )
+              ),
+
             ]);
           }
         }
@@ -302,6 +360,62 @@ export default {
         }
       });
     },
+
+    draw(v) {
+      this.modalType = 2;
+      this.modalTitle = "任务设计";
+      this.$refs.form.resetFields();
+
+      if (!this.domain) {
+        this.$Modal.confirm({
+          title: "您还未配置访问域名",
+          content: "您还未配置应用部署访问域名，是否现在立即去配置?",
+          onOk: () => {
+            this.$router.push({
+              name: "setting",
+              query: { name: "other" }
+            });
+          }
+        });
+        return;
+      }
+      this.modelerUrl = `${this.domain}/ports.html?&accessToken=${this.getStore("accessToken")}&time=${new Date()}`;
+      // this.showModeler = true;
+      this.graphVisible = true;
+      this.modelerLoading = false;
+      let that = this;
+      // 判断iframe是否加载完毕
+      let iframe = document.getElementById("iframe");
+      if (iframe.attachEvent) {
+        iframe.attachEvent("onload", function() {
+          //iframe加载完成后你需要进行的操作
+          alert(1);
+          that.modelerLoading = false;
+        });
+      } else {
+        iframe.onload = function() {
+          alert(1);
+          //iframe加载完成后你需要进行的操作
+          that.modelerLoading = false;
+        };
+      }
+
+    },
+
+    handleClose() {
+      this.$Modal.confirm({
+        title: "确认关闭",
+        content: "请记得点击左上角保存按钮，确定关闭编辑器?",
+        onOk: () => {
+          this.getDataList();
+          this.graphVisible = false;
+        },
+        onCancel: ()=> {
+          this.$Message.success("操作取消");
+        }
+      });
+    },
+
     clearSelectAll() {
       this.$refs.table.selectAll(false);
     },
