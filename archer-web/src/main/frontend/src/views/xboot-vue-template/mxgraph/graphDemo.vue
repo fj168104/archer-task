@@ -379,7 +379,7 @@ export default {
         });
         return;
       }
-      this.modelerUrl = `${this.domain}/ports.html?&accessToken=${this.getStore("accessToken")}&time=${new Date()}`;
+      this.modelerUrl = `${this.domain}/myports.html?&accessToken=${this.getStore("accessToken")}&time=${new Date()}`;
       // this.showModeler = true;
       this.graphVisible = true;
       this.modelerLoading = false;
@@ -389,12 +389,10 @@ export default {
       if (iframe.attachEvent) {
         iframe.attachEvent("onload", function() {
           //iframe加载完成后你需要进行的操作
-          alert(1);
           that.modelerLoading = false;
         });
       } else {
         iframe.onload = function() {
-          alert(1);
           //iframe加载完成后你需要进行的操作
           that.modelerLoading = false;
         };
