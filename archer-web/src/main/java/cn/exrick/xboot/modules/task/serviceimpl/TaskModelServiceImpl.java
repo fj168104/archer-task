@@ -1,8 +1,8 @@
 package cn.exrick.xboot.modules.task.serviceimpl;
 
-import cn.exrick.xboot.modules.task.dao.TaskFlowDefinitionDao;
-import cn.exrick.xboot.modules.task.entity.TaskFlowDefinition;
-import cn.exrick.xboot.modules.task.service.TaskFlowDefinitionService;
+import cn.exrick.xboot.modules.task.dao.TaskModelDao;
+import cn.exrick.xboot.modules.task.entity.TaskModel;
+import cn.exrick.xboot.modules.task.service.TaskModelService;
 import cn.exrick.xboot.common.vo.SearchVo;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
@@ -22,29 +22,29 @@ import java.util.List;
 import java.lang.reflect.Field;
 
 /**
- * 任务流定义接口实现
- * @author Feng
+ * 任务模型接口实现
+ * @author Exrick
  */
 @Slf4j
 @Service
 @Transactional
-public class TaskFlowDefinitionServiceImpl implements TaskFlowDefinitionService {
+public class TaskModelServiceImpl implements TaskModelService {
 
     @Autowired
-    private TaskFlowDefinitionDao taskFlowDefinitionDao;
+    private TaskModelDao taskModelDao;
 
     @Override
-    public TaskFlowDefinitionDao getRepository() {
-        return taskFlowDefinitionDao;
+    public TaskModelDao getRepository() {
+        return taskModelDao;
     }
 
     @Override
-    public Page<TaskFlowDefinition> findByCondition(TaskFlowDefinition taskFlowDefinition, SearchVo searchVo, Pageable pageable) {
+    public Page<TaskModel> findByCondition(TaskModel taskModel, SearchVo searchVo, Pageable pageable) {
 
-        return taskFlowDefinitionDao.findAll(new Specification<TaskFlowDefinition>() {
+        return taskModelDao.findAll(new Specification<TaskModel>() {
             @Nullable
             @Override
-            public Predicate toPredicate(Root<TaskFlowDefinition> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
+            public Predicate toPredicate(Root<TaskModel> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
 
                 // TODO 可添加你的其他搜索过滤条件 默认已有创建时间过滤
                 Path<Date> createTimeField=root.get("createTime");

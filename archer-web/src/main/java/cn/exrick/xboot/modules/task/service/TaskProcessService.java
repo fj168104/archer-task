@@ -1,7 +1,7 @@
 package cn.exrick.xboot.modules.task.service;
 
 import cn.exrick.xboot.base.XbootBaseService;
-import cn.exrick.xboot.modules.task.entity.TaskFlowRecord;
+import cn.exrick.xboot.modules.task.entity.TaskProcess;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import cn.exrick.xboot.common.vo.SearchVo;
@@ -9,17 +9,17 @@ import cn.exrick.xboot.common.vo.SearchVo;
 import java.util.List;
 
 /**
- * 任务执行记录接口
- * @author Feng
+ * 任务流程明细接口
+ * @author Exrick
  */
-public interface TaskFlowRecordService extends XbootBaseService<TaskFlowRecord,String> {
+public interface TaskProcessService extends XbootBaseService<TaskProcess,String> {
 
     /**
     * 多条件分页获取
-    * @param taskFlowRecord
+    * @param taskProcess
     * @param searchVo
     * @param pageable
     * @return
     */
-    Page<TaskFlowRecord> findByCondition(TaskFlowRecord taskFlowRecord, SearchVo searchVo, Pageable pageable);
+    Page<TaskProcess> findByCondition(TaskProcess taskProcess, SearchVo searchVo, Pageable pageable);
 }

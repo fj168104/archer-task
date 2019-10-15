@@ -6,8 +6,8 @@ import cn.exrick.xboot.common.utils.ResultUtil;
 import cn.exrick.xboot.common.vo.PageVo;
 import cn.exrick.xboot.common.vo.Result;
 import cn.exrick.xboot.common.vo.SearchVo;
-import cn.exrick.xboot.modules.task.entity.TaskUnitDefinition;
-import cn.exrick.xboot.modules.task.service.TaskUnitDefinitionService;
+import cn.exrick.xboot.modules.task.entity.TaskProcess;
+import cn.exrick.xboot.modules.task.service.TaskProcessService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -17,32 +17,32 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author Feng
+ * @author Exrick
  */
 @Slf4j
 @RestController
-@Api(description = "任务单元定义管理接口")
-@RequestMapping("/xboot/taskUnitDefinition")
+@Api(description = "任务流程明细管理接口")
+@RequestMapping("/xboot/taskProcess")
 @Transactional
-public class TaskUnitDefinitionController extends XbootBaseController<TaskUnitDefinition, String> {
+public class TaskProcessController extends XbootBaseController<TaskProcess, String> {
 
     @Autowired
-    private TaskUnitDefinitionService taskUnitDefinitionService;
+    private TaskProcessService taskProcessService;
 
     @Override
-    public TaskUnitDefinitionService getService() {
-        return taskUnitDefinitionService;
+    public TaskProcessService getService() {
+        return taskProcessService;
     }
 
 
     @RequestMapping(value = "/getByCondition", method = RequestMethod.GET)
     @ApiOperation(value = "多条件分页获取")
-    public Result<Page<TaskUnitDefinition>> getByCondition(@ModelAttribute TaskUnitDefinition taskUnitDefinition,
+    public Result<Page<TaskProcess>> getByCondition(@ModelAttribute TaskProcess taskProcess,
                                                             @ModelAttribute SearchVo searchVo,
                                                             @ModelAttribute PageVo pageVo){
 
-        Page<TaskUnitDefinition> page = taskUnitDefinitionService.findByCondition(taskUnitDefinition, searchVo, PageUtil.initPage(pageVo));
-        return new ResultUtil<Page<TaskUnitDefinition>>().setData(page);
+        Page<TaskProcess> page = taskProcessService.findByCondition(taskProcess, searchVo, PageUtil.initPage(pageVo));
+        return new ResultUtil<Page<TaskProcess>>().setData(page);
     }
 
 }
