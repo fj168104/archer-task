@@ -24,7 +24,7 @@ public class TaskModel extends XbootBaseEntity {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "模型名称")
-    private String name;
+    private String modelName;
 
     @ApiModelProperty(value = "标识")
     private String modelKey;
@@ -36,13 +36,13 @@ public class TaskModel extends XbootBaseEntity {
     private String description;
 
     @ApiModelProperty(value = "是否发布")
-    private Boolean release;
+    private Boolean isRelease= Boolean.FALSE;
 
     @ApiModelProperty(value = "是否启用 0启用 -1禁用")
-    private Integer status = CommonConstant.STATUS_NORMAL;
+    private Integer modelStatus = CommonConstant.STATUS_NORMAL;
 
-    @Column(name = "xml",columnDefinition="TEXT COMMENT '流程XML'")
+    @Column(columnDefinition="TEXT COMMENT '流程XML'")
     @ApiModelProperty(value = "流程XML")
-    private String xml;
+    private String processXml;
 
 }

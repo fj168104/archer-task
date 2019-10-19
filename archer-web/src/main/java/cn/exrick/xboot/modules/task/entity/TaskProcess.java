@@ -1,6 +1,7 @@
 package cn.exrick.xboot.modules.task.entity;
 
 import cn.exrick.xboot.base.XbootBaseEntity;
+import cn.exrick.xboot.common.constant.TaskConstant;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiModel;
@@ -34,10 +35,10 @@ public class TaskProcess extends XbootBaseEntity {
     private String runResult;
 
     @ApiModelProperty(value = "是否结束")
-    private Boolean finished;
+    private Integer finished= TaskConstant.INSTANCE_UNFINISH;
 
     @ApiModelProperty(value = "执行异常")
-    private Boolean exception;
+    private Boolean exception=Boolean.FALSE;
 
     @ApiModelProperty(value = "异常描述")
     private String errorMessage;

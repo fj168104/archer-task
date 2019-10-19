@@ -1,7 +1,7 @@
 package cn.exrick.xboot.modules.task.entity;
 
 import cn.exrick.xboot.base.XbootBaseEntity;
-import cn.exrick.xboot.common.constant.CommonConstant;
+import cn.exrick.xboot.common.constant.TaskConstant;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
@@ -34,13 +34,13 @@ public class TaskInstance extends XbootBaseEntity {
     private String description;
 
     @ApiModelProperty(value = "是否开启")
-    private Boolean started;
+    private Integer started= TaskConstant.INSTANCE_UNSTART;
 
     @ApiModelProperty(value = "是否结束")
-    private Boolean finished;
+    private Integer finished=TaskConstant.INSTANCE_UNFINISH;
 
     @ApiModelProperty(value = "是否停滞状态/人工处理中")
-    private Boolean pending;
+    private Integer pending=TaskConstant.INSTANCE_UNPENDING;
 
     @ApiModelProperty(value = "任务执行节点")
     private String executeNode;
