@@ -22,4 +22,5 @@ public interface TaskModelService extends XbootBaseService<TaskModel,String> {
     * @return
     */
     Page<TaskModel> findByCondition(TaskModel taskModel, SearchVo searchVo, Pageable pageable);
+
 }

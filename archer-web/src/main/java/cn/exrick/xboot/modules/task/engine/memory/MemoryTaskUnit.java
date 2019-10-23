@@ -1,7 +1,7 @@
-package cn.exrick.xboot.task.engine.memory;
+package cn.exrick.xboot.modules.task.engine.memory;
 
 
-import cn.exrick.xboot.task.engine.TaskUnit;
+import cn.exrick.xboot.modules.task.engine.TaskUnit;
 
 /**
  * Created by feng on 2019/9/5 0005

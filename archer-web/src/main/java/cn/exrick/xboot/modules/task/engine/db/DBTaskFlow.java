@@ -1,19 +1,48 @@
-package cn.exrick.xboot.task.engine.memory;
+package cn.exrick.xboot.modules.task.engine.db;
 
-import cn.exrick.xboot.task.engine.TaskFlowAdapter;
-import cn.exrick.xboot.task.engine.TaskUnit;
+import cn.exrick.xboot.modules.task.engine.TaskFlowAdapter;
+import cn.exrick.xboot.modules.task.engine.TaskUnit;
+import cn.exrick.xboot.modules.task.engine.memory.MemoryTaskNode;
+import cn.exrick.xboot.modules.task.engine.memory.MemoryTaskUnit;
+import cn.exrick.xboot.modules.task.entity.TaskInstance;
+import cn.exrick.xboot.modules.task.entity.TaskModel;
+import cn.exrick.xboot.modules.task.service.TaskInstanceService;
+import cn.exrick.xboot.modules.task.service.TaskModelService;
+import cn.exrick.xboot.modules.task.service.TaskProcessService;
 import cn.hutool.core.collection.ConcurrentHashSet;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.XmlUtil;
 import com.google.api.client.util.Sets;
+import org.jdom.JDOMFactory;
+import org.jdom.input.SAXBuilder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 
+import java.io.StringReader;
+import java.lang.annotation.Documented;
 import java.util.Set;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
- * Created by feng on 2019/9/5 0005
+ * Created by feng on 2019/10/20 0009
  */
-public class MemoryTaskFlow extends TaskFlowAdapter {
+
+public class DBTaskFlow extends TaskFlowAdapter {
+
+	private String taskInstanceId;
+
+	private TaskModelService modelService;
+
+	private TaskInstanceService taskInstanceService;
+
+	private TaskProcessService processService;
+
 
 	/**
 	 * 执行器
@@ -24,15 +53,31 @@ public class MemoryTaskFlow extends TaskFlowAdapter {
 	 */
 	private boolean isWaiting;
 
-	/**
+	 /**
 	 *
 	 */
 	private MemoryTaskNode rootNode;
 
 	private ConcurrentHashSet<MemoryTaskNode> executingTaskNode = new ConcurrentHashSet<>();
 
+	public DBTaskFlow(String taskInstanceId, TaskModelService modelService, TaskInstanceService taskInstanceService, TaskProcessService processService) {
+		this.taskInstanceId = taskInstanceId;
+		this.modelService = modelService;
+		this.taskInstanceService = taskInstanceService;
+		this.processService = processService;
+	}
+
 	@Override
 	public void loadTask() {
+		//解析XML
+		String xmlDoc = getXML();
+		//创建一个新的字符串
+		StringReader read = new StringReader(xmlDoc);
+		//创建新的输入源SAX 解析器将使用 InputSource 对象来确定如何读取 XML 输入
+		InputSource source = new InputSource(read);
+		//创建一个新的SAXBuilder
+		SAXBuilder sb = new SAXBuilder();
+
 		rootNode = createTask();
 		executor = Executors.newFixedThreadPool(5);
 	}
@@ -179,5 +224,15 @@ public class MemoryTaskFlow extends TaskFlowAdapter {
 				return ExecuteResult.SUCCESS;
 			}
 		});
+	}
+
+	/**
+	 * 从db中获取XML
+	 */
+	private String getXML(){
+		TaskInstance instance = taskInstanceService.get(taskInstanceId);
+		TaskModel model = modelService.get(instance.getModelId());
+		String modelXml = model.getProcessXml();
+		return "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" + modelXml;
 	}
 }

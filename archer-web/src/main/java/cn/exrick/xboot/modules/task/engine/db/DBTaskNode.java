@@ -1,18 +1,18 @@
-package cn.exrick.xboot.task.engine.memory;
+package cn.exrick.xboot.modules.task.engine.db;
 
-import cn.exrick.xboot.task.engine.BaseTaskNode;
-import cn.exrick.xboot.task.engine.DefaultTaskSemphone;
-import cn.exrick.xboot.task.engine.TaskNode;
-import cn.exrick.xboot.task.engine.TaskUnit;
+import cn.exrick.xboot.modules.task.engine.BaseTaskNode;
+import cn.exrick.xboot.modules.task.engine.DefaultTaskSemphone;
+import cn.exrick.xboot.modules.task.engine.TaskNode;
+import cn.exrick.xboot.modules.task.engine.TaskUnit;
 
 import java.util.Set;
 
 /**
  * Created by feng on 2019/9/7 0007
  */
-public class MemoryTaskNode extends BaseTaskNode {
-	
-	public MemoryTaskNode(TaskUnit taskUnit) {
+public class DBTaskNode extends BaseTaskNode {
+
+	public DBTaskNode(TaskUnit taskUnit) {
 		super(taskUnit);
 		semphone = new DefaultTaskSemphone<>(taskUnit.getTaskName());
 	}

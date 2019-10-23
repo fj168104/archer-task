@@ -2,9 +2,9 @@ const elements = [
 	{
 		// id: 'd1',
 		type: 'TASK',
-		typeName: '任务',
+		typeName: '程序任务',
 		typeDesp: '',
-		image: 'mxgraph/resources/images/icons48/gear.png',
+		image: 'images/icons48/gear.png',
 		isControllNode: false,
 		style: '',
 		taskClass: 'com.mr.xxx.TaskDemo',
@@ -12,11 +12,23 @@ const elements = [
 	},
 
 	{
+		// id: 'd1',
+		type: 'USER',
+		typeName: '用户任务',
+		typeDesp: '',
+		image: 'images/icons48/keys.png',
+		isControllNode: false,
+		style: 'fillColor=#FF99CC',
+		operationTag: '',
+		contentFunc: createUserContent
+	},
+
+	{
 		// id: 'd2',
 		type: 'MAIL',
 		typeName: '邮件',
 		typeDesp: '',
-		image: 'mxgraph/resources/images/icons48/mail_new.png',
+		image: 'images/icons48/mail_new.png',
 		isControllNode: false,
 		style: '',
 		To: '',
@@ -30,7 +42,7 @@ const elements = [
 		type: 'START',
 		typeName: '开始',
 		typeDesp: '',
-		image: 'mxgraph/resources/images/icons48/event.png',
+		image: 'images/icons48/event.png',
 		isControllNode: true,
 		style: 'fillColor=#cdeb8b;shape=ellipse',
 		contentFunc: createStartContent
@@ -41,7 +53,7 @@ const elements = [
 		type: 'END',
 		typeName: '结束',
 		typeDesp: '',
-		image: 'mxgraph/resources/images/icons48/event_end.png',
+		image: 'images/icons48/event_end.png',
 		isControllNode: true,
 		style: 'fillColor=#ffc7c7;shape=ellipse'
 	},
@@ -51,7 +63,7 @@ const elements = [
 		type: 'ERROR',
 		typeName: '异常',
 		typeDesp: '',
-		image: 'mxgraph/resources/images/icons48/error.png',
+		image: 'images/icons48/error.png',
 		isControllNode: true,
 		style: 'fillColor=#f52212;shape=ellipse',
 		errorClass: 'com.mr.xxx.ErrorDemo',
@@ -63,13 +75,22 @@ const elements = [
 		type: 'MERGE',
 		typeName: '分支',
 		typeDesp: '',
-		image: 'mxgraph/resources/images/icons48/merge.png',
+		image: 'images/icons48/merge.png',
 		isControllNode: true,
 		style: 'fillColor=#91bcc0;shape=ellipse',
 		condition: '',
 		contentFunc: createMergeContent
 	},
 ];
+
+const taskFunc = {
+	'TASK': createTaskContent,
+	'USER': createUserContent,
+	'MAIL': createMailContent,
+	'START': createStartContent,
+	'ERROR': createErrorContent,
+	'MERGE': createMergeContent
+}
 
 
 function createStartContent() {
@@ -85,14 +106,6 @@ function createStartContent() {
 		cell.data.typeDesp = content.getElementsByTagName('textarea')[0].value;
 	};
 	return content;
-}
-
-const taskFunc = {
-	'TASK': createTaskContent,
-	'MAIL': createMailContent,
-	'START': createStartContent,
-	'ERROR': createErrorContent,
-	'MERGE': createMergeContent
 }
 
 function createErrorContent() {
@@ -139,6 +152,22 @@ function createTaskContent() {
 	content.func = function (cell) {
 		cell.data.typeDesp = content.getElementsByTagName('textarea')[0].value;
 		cell.data.taskClass = content.getElementsByTagName('input')[1].value;
+	};
+	return content;
+}
+
+function createUserContent() {
+	let content = document.createElement('div');
+	let table = document.createElement('table');
+
+	addInputElement(table, 'input', '名称', this.data.typeName, true);
+	addInputElement(table, 'textarea', '描述', this.data.typeDesp, false, 3);
+	addInputElement(table, 'input', '用户操作Tag', this.data.operationTag);
+	content.appendChild(table);
+
+	content.func = function (cell) {
+		cell.data.typeDesp = content.getElementsByTagName('textarea')[0].value;
+		cell.data.operationTag = content.getElementsByTagName('input')[1].value;
 	};
 	return content;
 }

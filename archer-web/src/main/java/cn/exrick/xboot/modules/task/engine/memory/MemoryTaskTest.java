@@ -1,4 +1,4 @@
-package cn.exrick.xboot.task.engine.memory;
+package cn.exrick.xboot.modules.task.engine.memory;
 
 /**
  * Created by feng on 2019/9/8 0008
