@@ -9,7 +9,7 @@ public interface TaskUnit {
 	 * 获取任务名，不能重复
 	 * @return
 	 */
-	String getTaskName();
+	String getTaskId();
 
 	/**
 	 * 任务执行

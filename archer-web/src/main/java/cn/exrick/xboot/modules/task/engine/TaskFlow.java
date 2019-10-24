@@ -13,7 +13,7 @@ public interface TaskFlow {
 	/**
 	 * 载入任务
 	 */
-	void loadTask();
+	void loadTask() throws Exception;
 
 	/**
 	 * 启动任务

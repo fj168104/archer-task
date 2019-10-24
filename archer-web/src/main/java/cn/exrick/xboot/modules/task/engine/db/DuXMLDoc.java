@@ -32,7 +32,7 @@ public class DuXMLDoc {
 			Element et = null;
 			for(int i=0;i<jiedian.size();i++){
 				et = (Element) jiedian.get(i);//循环依次得到子元素
-
+				
 				System.out.println(et.getChild("users_id",ns).getText());
 				System.out.println(et.getChild("users_address",ns).getText());
 			}

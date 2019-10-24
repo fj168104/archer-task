@@ -220,8 +220,8 @@
 			//添加cell双击后事件函数
 			Object.values(graph.getModel().cells)
 				.forEach(cell => {
-					if (cell.vertex && cell.data) {
-						cell.contentFunc = taskFunc[cell.data.type];
+					if (cell.vertex && cell.getValue()) {
+						cell.contentFunc = taskFunc[cell.getValue().type];
 					}
 				});
 
@@ -264,7 +264,7 @@
 			let td = document.createElement('td');
 			td.appendChild(mxUtils.button('确定', function () {
 				content.func(cell);
-				graph.cellLabelChanged(cell, cell.data, true);
+				graph.cellLabelChanged(cell, cell.getValue(), true);
 
 				wnd.destroy();
 			}));
@@ -345,7 +345,7 @@
 					}
 
 					// 自定义的业务数据放在 data 属性
-					v1.data = element
+//					v1.data = element
 					v1.contentFunc = element.contentFunc;
 
 

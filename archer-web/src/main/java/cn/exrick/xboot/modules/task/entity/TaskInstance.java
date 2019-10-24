@@ -11,6 +11,7 @@ import lombok.Data;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.List;
 
 /**
  * @author Feng
@@ -40,13 +41,13 @@ public class TaskInstance extends XbootBaseEntity {
     private Integer finished=TaskConstant.INSTANCE_UNFINISH;
 
     @ApiModelProperty(value = "是否停滞状态/人工处理中")
-    private Integer pending=TaskConstant.INSTANCE_UNPENDING;
+    private Integer pending=TaskConstant.INSTANCE_PENDING;
 
-    @ApiModelProperty(value = "任务执行节点")
+    @ApiModelProperty(value = "任务执行节点集合")
     private String executeNode;
 
     @Transient
     @TableField(exist = false)
-    @ApiModelProperty(value = "任务执行节点")
-    private String executeNodeName;
+    @ApiModelProperty(value = "任务执行节点集合List")
+    private List<String> executeNodeList;
 }

@@ -35,7 +35,7 @@ public class MemoryTaskFlow extends TaskFlowAdapter {
 	private ConcurrentHashSet<MemoryTaskNode> executingTaskNode = new ConcurrentHashSet<>();
 
 	@Override
-	public void loadTask() {
+	public void loadTask() throws Exception{
 		rootNode = createTask();
 		executor = Executors.newFixedThreadPool(5);
 	}

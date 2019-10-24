@@ -64,7 +64,7 @@ const elements = [
 		typeName: '异常',
 		typeDesp: '',
 		image: 'images/icons48/error.png',
-		isControllNode: true,
+		isControllNode: false,
 		style: 'fillColor=#f52212;shape=ellipse',
 		errorClass: 'com.mr.xxx.ErrorDemo',
 		contentFunc: createErrorContent
@@ -97,8 +97,8 @@ function createStartContent() {
 	let content = document.createElement('div');
 	let table = document.createElement('table');
 
-	addInputElement(table, 'input', '名称', this.data.typeName, true);
-	addInputElement(table, 'textarea', '描述', this.data.typeDesp, false, 3);
+	addInputElement(table, 'input', '名称', this.getValue().typeName, true);
+	addInputElement(table, 'textarea', '描述', this.getValue().typeDesp, false, 3);
 
 	content.appendChild(table);
 
@@ -112,9 +112,9 @@ function createErrorContent() {
 	let content = document.createElement('div');
 	let table = document.createElement('table');
 
-	addInputElement(table, 'input', '名称', this.data.typeName, true);
-	addInputElement(table, 'textarea', '描述', this.data.typeDesp, false, 3);
-	addInputElement(table, 'input', '异常处理类', this.data.errorClass);
+	addInputElement(table, 'input', '名称', this.getValue().typeName, true);
+	addInputElement(table, 'textarea', '描述', this.getValue().typeDesp, false, 3);
+	addInputElement(table, 'input', '异常处理类', this.getValue().errorClass);
 	content.appendChild(table);
 
 	content.func = function (cell) {
@@ -128,9 +128,9 @@ function createMergeContent() {
 	let content = document.createElement('div');
 	let table = document.createElement('table');
 
-	addInputElement(table, 'input', '名称', this.data.typeName, true);
-	addInputElement(table, 'textarea', '描述', this.data.typeDesp, false, 3);
-	addInputElement(table, 'input', '路由条件', this.data.condition);
+	addInputElement(table, 'input', '名称', this.getValue().typeName, true);
+	addInputElement(table, 'textarea', '描述', this.getValue().typeDesp, false, 3);
+	addInputElement(table, 'input', '路由条件', this.getValue().condition);
 	content.appendChild(table);
 
 	content.func = function (cell) {
@@ -144,9 +144,9 @@ function createTaskContent() {
 	let content = document.createElement('div');
 	let table = document.createElement('table');
 
-	addInputElement(table, 'input', '名称', this.data.typeName, true);
-	addInputElement(table, 'textarea', '描述', this.data.typeDesp, false, 3);
-	addInputElement(table, 'input', '任务处理类', this.data.taskClass);
+	addInputElement(table, 'input', '名称', this.getValue().typeName, true);
+	addInputElement(table, 'textarea', '描述', this.getValue().typeDesp, false, 3);
+	addInputElement(table, 'input', '任务处理类', this.getValue().taskClass);
 	content.appendChild(table);
 
 	content.func = function (cell) {
@@ -160,9 +160,9 @@ function createUserContent() {
 	let content = document.createElement('div');
 	let table = document.createElement('table');
 
-	addInputElement(table, 'input', '名称', this.data.typeName, true);
-	addInputElement(table, 'textarea', '描述', this.data.typeDesp, false, 3);
-	addInputElement(table, 'input', '用户操作Tag', this.data.operationTag);
+	addInputElement(table, 'input', '名称', this.getValue().typeName, true);
+	addInputElement(table, 'textarea', '描述', this.getValue().typeDesp, false, 3);
+	addInputElement(table, 'input', '用户操作Tag', this.getValue().operationTag);
 	content.appendChild(table);
 
 	content.func = function (cell) {
@@ -176,11 +176,11 @@ function createMailContent() {
 	let content = document.createElement('div');
 	let table = document.createElement('table');
 
-	addInputElement(table, 'input', '名称', this.data.typeName, true);
-	addInputElement(table, 'textarea', '描述', this.data.typeDesp, false, 3);
-	addInputElement(table, 'input', '收件人', this.data.To);
-	addInputElement(table, 'input', '抄送人', this.data.Cc);
-	addInputElement(table, 'input', '发件人', this.data.From);
+	addInputElement(table, 'input', '名称', this.getValue().typeName, true);
+	addInputElement(table, 'textarea', '描述', this.getValue().typeDesp, false, 3);
+	addInputElement(table, 'input', '收件人', this.getValue().To);
+	addInputElement(table, 'input', '抄送人', this.getValue().Cc);
+	addInputElement(table, 'input', '发件人', this.getValue().From);
 	content.appendChild(table);
 
 	content.func = function (cell) {

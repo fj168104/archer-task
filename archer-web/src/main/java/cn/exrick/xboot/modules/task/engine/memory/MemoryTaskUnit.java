@@ -16,7 +16,7 @@ public abstract class MemoryTaskUnit implements TaskUnit {
 	}
 
 	@Override
-	public String getTaskName() {
+	public String getTaskId() {
 		return taskName;
 	}
 

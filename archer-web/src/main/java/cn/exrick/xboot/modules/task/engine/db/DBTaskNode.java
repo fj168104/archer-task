@@ -3,7 +3,6 @@ package cn.exrick.xboot.modules.task.engine.db;
 import cn.exrick.xboot.modules.task.engine.BaseTaskNode;
 import cn.exrick.xboot.modules.task.engine.DefaultTaskSemphone;
 import cn.exrick.xboot.modules.task.engine.TaskNode;
-import cn.exrick.xboot.modules.task.engine.TaskUnit;
 
 import java.util.Set;
 
@@ -12,21 +11,22 @@ import java.util.Set;
  */
 public class DBTaskNode extends BaseTaskNode {
 
-	public DBTaskNode(TaskUnit taskUnit) {
+	public <T extends DBTaskUnit> DBTaskNode(T taskUnit) {
 		super(taskUnit);
-		semphone = new DefaultTaskSemphone<>(taskUnit.getTaskName());
+		semphone = new DefaultTaskSemphone<>(taskUnit.getTaskId());
 	}
 
 	@Override
 	public void next() {
-		this.nextTaskNodes.forEach(item ->item.getCurrentSets().add(semphone));
+		this.nextTaskNodes.forEach(item -> item.getCurrentSets().add(semphone));
 	}
 
 	/**
 	 * 添加后继节点
+	 *
 	 * @return
 	 */
-	public TaskNode addNextNode(TaskNode node){
+	public TaskNode addNextNode(TaskNode node) {
 		//后继
 		nextTaskNodes.add(node);
 		//前驱

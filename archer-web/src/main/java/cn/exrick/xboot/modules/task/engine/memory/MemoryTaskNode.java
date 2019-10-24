@@ -14,7 +14,7 @@ public class MemoryTaskNode extends BaseTaskNode {
 
 	public MemoryTaskNode(TaskUnit taskUnit) {
 		super(taskUnit);
-		semphone = new DefaultTaskSemphone<>(taskUnit.getTaskName());
+		semphone = new DefaultTaskSemphone<>(taskUnit.getTaskId());
 	}
 
 	@Override

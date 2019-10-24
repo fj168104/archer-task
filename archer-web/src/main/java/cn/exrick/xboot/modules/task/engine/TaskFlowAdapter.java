@@ -7,7 +7,7 @@ import java.util.Set;
  */
 public class TaskFlowAdapter extends AbsTaskFlow {
 	@Override
-	public void loadTask() {
+	public void loadTask() throws Exception{
 		throw new UnsupportedOperationException("");
 	}
 

@@ -10,5 +10,11 @@ import java.util.List;
  * @author Exrick
  */
 public interface TaskProcessDao extends XbootBaseDao<TaskProcess,String> {
-
+	/**
+	 * 通过taskId 和 搜索
+	 * @param taskId
+	 * @param executeNode
+	 * @return
+	 */
+	List<TaskProcess> findBytaskIdAndExecuteNode(String taskId, String executeNode);
 }

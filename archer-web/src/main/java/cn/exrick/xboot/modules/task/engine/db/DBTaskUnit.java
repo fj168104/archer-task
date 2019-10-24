@@ -9,4 +9,23 @@ import cn.exrick.xboot.modules.task.engine.TaskUnit;
  */
 public abstract class DBTaskUnit implements TaskUnit {
 
+	protected String taskId;
+
+	protected String type;
+
+	protected String typeName;
+
+	protected String typeDesp;
+
+	protected boolean isControllNode;
+
+
+	public DBTaskUnit(String taskId) {
+		this.taskId = taskId;
+	}
+
+	@Override
+	public String getTaskId() {
+		return taskId;
+	}
 }
