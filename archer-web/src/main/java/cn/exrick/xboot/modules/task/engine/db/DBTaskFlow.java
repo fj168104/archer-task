@@ -1,18 +1,21 @@
 package cn.exrick.xboot.modules.task.engine.db;
 
 import cn.exrick.xboot.common.constant.TaskConstant;
+import cn.exrick.xboot.common.exception.XbootException;
 import cn.exrick.xboot.modules.task.engine.TaskFlowAdapter;
 import cn.exrick.xboot.modules.task.engine.TaskUnit;
+import cn.exrick.xboot.modules.task.engine.db.unit.AutoTaskUnit;
+import cn.exrick.xboot.modules.task.engine.db.unit.ControllingUnit;
+import cn.exrick.xboot.modules.task.engine.db.unit.MailTaskUnit;
+import cn.exrick.xboot.modules.task.engine.db.unit.UserTaskUnit;
 import cn.exrick.xboot.modules.task.engine.memory.MemoryTaskNode;
 import cn.exrick.xboot.modules.task.engine.memory.MemoryTaskUnit;
 import cn.exrick.xboot.modules.task.entity.TaskInstance;
 import cn.exrick.xboot.modules.task.entity.TaskModel;
-import cn.exrick.xboot.modules.task.entity.TaskProcess;
 import cn.exrick.xboot.modules.task.service.TaskInstanceService;
 import cn.exrick.xboot.modules.task.service.TaskModelService;
 import cn.exrick.xboot.modules.task.service.TaskProcessService;
 import cn.hutool.core.collection.ConcurrentHashSet;
-import cn.hutool.core.util.RandomUtil;
 import com.google.api.client.util.Sets;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -49,7 +52,7 @@ public class DBTaskFlow extends TaskFlowAdapter {
 
 
 	private Map<String, Element> vertexMap = Maps.newHashMap();
-	private Map<String, Element> edgeMap = Maps.newHashMap();
+	private Set<Element> edgeSet = Sets.newHashSet();
 
 	/**
 	 * 执行器
@@ -60,10 +63,10 @@ public class DBTaskFlow extends TaskFlowAdapter {
 	 */
 	private boolean isWaiting;
 
-	 /**
+	/**
 	 * 当前执行的节点对象
 	 */
-	private DBTaskNode executingNode;
+	private List<DBTaskNode> executingNodes = Lists.newArrayList();
 
 	private ConcurrentHashSet<MemoryTaskNode> executingTaskNode = new ConcurrentHashSet<>();
 
@@ -72,21 +75,16 @@ public class DBTaskFlow extends TaskFlowAdapter {
 		this.taskInstanceService = taskInstanceService;
 		this.processService = processService;
 		instance = taskInstanceService.get(taskInstanceId);
-		if (StringUtils.isNotEmpty(instance.getExecuteNode())) {
-			String nodes[] = instance.getExecuteNode().trim().split(",");
-			instance.setExecuteNodeList(Arrays.asList(nodes));
-		} else {
-			instance.setExecuteNodeList(Lists.newArrayList());
-		}
+		setExecuteNodeList(instance);
 	}
 
 	@Override
-	public void loadTask() throws Exception{
-		if(instance.getFinished() == TaskConstant.INSTANCE_FINISH){
+	public void loadTask() throws Exception {
+		if (instance.getFinished() == TaskConstant.INSTANCE_FINISH) {
 			log.warn("任务已结束，不能操作");
 		}
 
-		if(instance.getPending() == TaskConstant.INSTANCE_UNPENDING){
+		if (instance.getPending() == TaskConstant.INSTANCE_UNPENDING) {
 			log.warn("任务运行中，不能操作");
 		}
 
@@ -97,27 +95,61 @@ public class DBTaskFlow extends TaskFlowAdapter {
 		//得到根元素所有子元素的集合
 		List mxCellElements = root.getChild("root").getChildren("mxCell");
 
-		for(Iterator iterator = mxCellElements.iterator();iterator.hasNext();){
+		for (Iterator iterator = mxCellElements.iterator(); iterator.hasNext(); ) {
 			Element cellElement = (Element) iterator.next();
 			//去掉多余的元素
-			if(!"1".equals(cellElement.getAttributeValue("parent"))){
+			if (!"1".equals(cellElement.getAttributeValue("parent"))) {
 				iterator.remove();
 				continue;
 			}
-			if(cellElement.getAttribute("vertex")!= null) vertexMap.put(cellElement.getAttributeValue("id"), cellElement);
-			if(cellElement.getAttribute("edge")!= null) edgeMap.put(cellElement.getAttributeValue("id"), cellElement);
+			if (cellElement.getAttribute("vertex") != null)
+				vertexMap.put(cellElement.getAttributeValue("id"), cellElement);
+			if (cellElement.getAttribute("edge") != null) edgeSet.add(cellElement);
 		}
 
-		String executeNode = instance.getExecuteNode();
-		TaskProcess process = processService.
-		log.info("任务运行节点：");
-		for(Map.Entry<String, Element> entry: edgeMap.entrySet()){
-
+		//初始化executingNodes
+		List<String> executeNodeList = instance.getExecuteNodeList();
+		for (String nodeId : executeNodeList) {
+			executingNodes.add(new DBTaskNode(getUnit(nodeId),taskInstanceService, processService, vertexMap, edgeSet));
 		}
+		log.info("任务运行节点：" + executingNodes);
+
 	}
 
 	@Override
 	public void start() {
+		if(instance.getStarted().equals(TaskConstant.INSTANCE_UNSTART)){
+			//获取 START 节点
+			for (Map.Entry<String, Element> entry : vertexMap.entrySet()) {
+				Element element = entry.getValue().getChild("Object");
+				String type = element.getAttributeValue("type");
+				if(type.equalsIgnoreCase("START")){
+					executingNodes.add(new DBTaskNode(getUnit(entry.getKey()),taskInstanceService, processService, vertexMap, edgeSet));
+					break;
+				}
+			}
+			//插入流程记录，更新 instance
+			DBTaskNode taskNode = executingNodes.get(0);
+//			TaskProcess process = new TaskProcess();
+//			process.setTaskId(instance.getId());
+//			process.setExecuteNode(taskNode.getSemphone().toString());
+//			processService.save(process);
+			instance.setStarted(TaskConstant.INSTANCE_STARTED);
+			instance.setExecuteNode(taskNode.getSemphone().toString());
+			setExecuteNodeList(instance);
+			taskInstanceService.save(instance);
+			//递归next 插入流程记录，更新 instance
+			taskNode.next();
+
+		}else if(instance.getFinished().equals(TaskConstant.INSTANCE_FINISH)){
+			throw new XbootException("流程已经结束");
+
+		}else if(instance.getPending().equals(TaskConstant.INSTANCE_UNPENDING)){
+			throw new XbootException("流程还在运行中，不能启动");
+		}else{
+			recovery();
+		}
+
 		Set<MemoryTaskNode> executableNodes = process(rootNode);
 		while (!CollectionUtils.isEmpty(executableNodes)) {
 			Set<MemoryTaskNode> executableNodeTemps = Sets.newHashSet();
@@ -140,7 +172,7 @@ public class DBTaskFlow extends TaskFlowAdapter {
 
 	@Override
 	public void kill() {
-		executor.shutdownNow();
+
 	}
 
 	@Override
@@ -199,47 +231,6 @@ public class DBTaskFlow extends TaskFlowAdapter {
 		}
 	}
 
-	private MemoryTaskNode createTask() {
-		MemoryTaskNode rootNode = this.createStartNode();
-		MemoryTaskNode taskNode1 = createNode("任务1");
-		rootNode.addNextNode(taskNode1);
-
-		MemoryTaskNode taskNode2 = createNode("任务2");
-		MemoryTaskNode taskNode3 = createNode("任务3");
-		taskNode1.addNextNode(taskNode2).addNextNode(taskNode3);
-
-		MemoryTaskNode taskNode4 = createNode("任务4");
-		taskNode2.addNextNode(taskNode4);
-		taskNode3.addNextNode(taskNode4);
-
-		MemoryTaskNode endNode = this.createEndNode();
-		taskNode4.addNextNode(endNode);
-
-		return rootNode;
-	}
-
-	private MemoryTaskNode createNode(String taskName) {
-		MemoryTaskUnit taskUnit = new MemoryTaskUnit(taskName) {
-
-			@Override
-			public ExecuteResult execute() {
-				System.out.println(taskName + "任务启动");
-				for (int i = 0; i < RandomUtil.randomInt(5); i++) {
-					System.out.println(taskName + "任务执行中...");
-					try {
-						waitFor();
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-				System.out.println(taskName + "任务完成");
-				return ExecuteResult.SUCCESS;
-			}
-		};
-		return new MemoryTaskNode(taskUnit);
-	}
-
 	private MemoryTaskNode createStartNode() {
 		return new MemoryTaskNode(new MemoryTaskUnit("开始节点") {
 			@Override
@@ -277,4 +268,57 @@ public class DBTaskFlow extends TaskFlowAdapter {
 
 		return sb.build(source);
 	}
+
+	private DBTaskUnit getUnit(String nodeId) {
+		DBTaskUnit taskUnit;
+		for (Map.Entry<String, Element> entry : vertexMap.entrySet()) {
+			if (entry.getKey().equals(nodeId)) {
+				Element element = entry.getValue().getChild("Object");
+				String type = element.getAttributeValue("type");
+				switch (type) {
+					case "TASK":
+						taskUnit = new AutoTaskUnit(nodeId,
+								type,
+								element.getAttributeValue("typeName"),
+								element.getAttributeValue("typeDesp"),
+								element.getAttributeValue("taskClass"));
+						break;
+					case "USER":
+						taskUnit = new UserTaskUnit(nodeId,
+								type,
+								element.getAttributeValue("typeName"),
+								element.getAttributeValue("typeDesp"),
+								element.getAttributeValue("operationTag"));
+						break;
+					case "MAIL":
+						taskUnit = new MailTaskUnit(nodeId,
+								type,
+								element.getAttributeValue("typeName"),
+								element.getAttributeValue("typeDesp"),
+								element.getAttributeValue("cc"),
+								element.getAttributeValue("to"),
+								element.getAttributeValue("from"));
+						break;
+					default:
+						taskUnit = new ControllingUnit(nodeId,
+								type,
+								element.getAttributeValue("typeName"),
+								element.getAttributeValue("typeDesp"));
+
+				}
+				return taskUnit;
+			}
+		}
+		throw new XbootException("XML中找不到相应的节点，nodeId = " + nodeId);
+	}
+
+	private void setExecuteNodeList(TaskInstance instance){
+		if (StringUtils.isNotEmpty(instance.getExecuteNode())) {
+			String nodes[] = instance.getExecuteNode().trim().split(",");
+			instance.setExecuteNodeList(Arrays.asList(nodes));
+		} else {
+			instance.setExecuteNodeList(Lists.newArrayList());
+		}
+	}
+
 }

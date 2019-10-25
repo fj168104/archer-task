@@ -41,7 +41,7 @@ public class TaskInstance extends XbootBaseEntity {
     private Integer finished=TaskConstant.INSTANCE_UNFINISH;
 
     @ApiModelProperty(value = "是否停滞状态/人工处理中")
-    private Integer pending=TaskConstant.INSTANCE_PENDING;
+    private Integer pending=TaskConstant.INSTANCE_UNPENDING;
 
     @ApiModelProperty(value = "任务执行节点集合")
     private String executeNode;

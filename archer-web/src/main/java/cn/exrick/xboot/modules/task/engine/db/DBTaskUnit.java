@@ -9,7 +9,7 @@ import cn.exrick.xboot.modules.task.engine.TaskUnit;
  */
 public abstract class DBTaskUnit implements TaskUnit {
 
-	protected String taskId;
+	protected String unitId;
 
 	protected String type;
 
@@ -19,13 +19,17 @@ public abstract class DBTaskUnit implements TaskUnit {
 
 	protected boolean isControllNode;
 
-
-	public DBTaskUnit(String taskId) {
-		this.taskId = taskId;
+	public DBTaskUnit(String unitId, String type, String typeName, String typeDesp, boolean isControllNode) {
+		this.unitId = unitId;
+		this.type = type;
+		this.typeName = typeName;
+		this.typeDesp = typeDesp;
+		this.isControllNode = isControllNode;
 	}
 
 	@Override
-	public String getTaskId() {
-		return taskId;
+	public String getUnitId() {
+		return unitId;
 	}
+
 }

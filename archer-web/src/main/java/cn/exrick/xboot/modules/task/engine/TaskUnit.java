@@ -6,10 +6,10 @@ package cn.exrick.xboot.modules.task.engine;
 public interface TaskUnit {
 
 	/**
-	 * 获取任务名，不能重复
+	 * 获取任单元名，不能重复
 	 * @return
 	 */
-	String getTaskId();
+	String getUnitId();
 
 	/**
 	 * 任务执行

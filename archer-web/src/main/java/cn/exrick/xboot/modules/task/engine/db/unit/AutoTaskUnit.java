@@ -12,9 +12,14 @@ public class AutoTaskUnit extends DBTaskUnit {
 
 	protected IAutoTask autoTask;
 
-	public AutoTaskUnit(String taskId){
-		super(taskId);
-		isControllNode = false;
+	public AutoTaskUnit(String unitId, String type, String typeName, String typeDesp, String taskName) {
+		super(unitId, type, typeName, typeDesp, false);
+		try {
+			autoTask = (IAutoTask) Class.forName(taskName).newInstance();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new XbootException(e.getMessage());
+		}
 	}
 
 

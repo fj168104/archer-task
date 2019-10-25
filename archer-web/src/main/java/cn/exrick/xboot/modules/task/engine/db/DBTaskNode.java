@@ -3,7 +3,11 @@ package cn.exrick.xboot.modules.task.engine.db;
 import cn.exrick.xboot.modules.task.engine.BaseTaskNode;
 import cn.exrick.xboot.modules.task.engine.DefaultTaskSemphone;
 import cn.exrick.xboot.modules.task.engine.TaskNode;
+import cn.exrick.xboot.modules.task.service.TaskInstanceService;
+import cn.exrick.xboot.modules.task.service.TaskProcessService;
+import org.jdom.Element;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -11,10 +15,28 @@ import java.util.Set;
  */
 public class DBTaskNode extends BaseTaskNode {
 
-	public <T extends DBTaskUnit> DBTaskNode(T taskUnit) {
+	private TaskInstanceService taskInstanceService;
+
+	private TaskProcessService processService;
+
+
+	private Map<String, Element> vertexMap;
+	private Set<Element> edgeSet;
+
+
+	public <T extends DBTaskUnit> DBTaskNode(T taskUnit,
+											 TaskInstanceService taskInstanceService,
+											 TaskProcessService processService,
+											 Map<String, Element> vertexMap,
+											 Set<Element> edgeSet) {
 		super(taskUnit);
-		semphone = new DefaultTaskSemphone<>(taskUnit.getTaskId());
+		this.taskInstanceService = taskInstanceService;
+		this.processService = processService;
+		this.vertexMap = vertexMap;
+		this.edgeSet = edgeSet;
+		semphone = new DefaultTaskSemphone<>(taskUnit.getUnitId());
 	}
+
 
 	@Override
 	public void next() {
@@ -45,5 +67,13 @@ public class DBTaskNode extends BaseTaskNode {
 	@Override
 	public Set<TaskNode> getPrevNodes() {
 		return prevTaskNodes;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || !(o instanceof BaseTaskNode)) {
+			return false;
+		}
+		return semphone.equals(((BaseTaskNode) o).getSemphone());
 	}
 }

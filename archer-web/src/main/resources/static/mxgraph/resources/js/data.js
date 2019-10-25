@@ -31,9 +31,9 @@ const elements = [
 		image: 'images/icons48/mail_new.png',
 		isControllNode: false,
 		style: '',
-		To: '',
-		Cc: '',
-		From: '',
+		to: '',
+		cc: '',
+		from: '',
 		contentFunc: createMailContent
 	},
 

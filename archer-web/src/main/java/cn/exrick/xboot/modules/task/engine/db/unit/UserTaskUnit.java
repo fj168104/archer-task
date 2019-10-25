@@ -8,11 +8,12 @@ import cn.exrick.xboot.modules.task.engine.db.DBTaskUnit;
 
 public class UserTaskUnit extends DBTaskUnit {
 
-	public UserTaskUnit(String taskId){
-		super(taskId);
-		isControllNode = false;
-	}
+	private String operationTag;
 
+	public UserTaskUnit(String unitId, String type, String typeName, String typeDesp, String operationTag) {
+		super(unitId, type, typeName, typeDesp, false);
+		this.operationTag = operationTag;
+	}
 
 	@Override
 	public ExecuteResult execute() {
