@@ -22,7 +22,6 @@ public class AutoTaskUnit extends DBTaskUnit {
 		}
 	}
 
-
 	@Override
 	public ExecuteResult execute() {
 		ExecuteResult result = ExecuteResult.FAIL;

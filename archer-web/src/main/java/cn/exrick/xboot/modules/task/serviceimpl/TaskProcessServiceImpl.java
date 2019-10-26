@@ -1,6 +1,9 @@
 package cn.exrick.xboot.modules.task.serviceimpl;
 
 import cn.exrick.xboot.modules.task.dao.TaskProcessDao;
+import cn.exrick.xboot.modules.task.engine.TaskUnit;
+import cn.exrick.xboot.modules.task.engine.db.DBTaskNode;
+import cn.exrick.xboot.modules.task.engine.db.DBTaskUnit;
 import cn.exrick.xboot.modules.task.entity.TaskProcess;
 import cn.exrick.xboot.modules.task.service.TaskProcessService;
 import cn.exrick.xboot.common.vo.SearchVo;
@@ -23,6 +26,7 @@ import java.lang.reflect.Field;
 
 /**
  * 任务流程明细接口实现
+ *
  * @author Exrick
  */
 @Slf4j
@@ -47,12 +51,12 @@ public class TaskProcessServiceImpl implements TaskProcessService {
             public Predicate toPredicate(Root<TaskProcess> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
 
                 // TODO 可添加你的其他搜索过滤条件 默认已有创建时间过滤
-                Path<Date> createTimeField=root.get("createTime");
+                Path<Date> createTimeField = root.get("createTime");
 
                 List<Predicate> list = new ArrayList<Predicate>();
 
                 //创建时间
-                if(StrUtil.isNotBlank(searchVo.getStartDate())&&StrUtil.isNotBlank(searchVo.getEndDate())){
+                if (StrUtil.isNotBlank(searchVo.getStartDate()) && StrUtil.isNotBlank(searchVo.getEndDate())) {
                     Date start = DateUtil.parse(searchVo.getStartDate());
                     Date end = DateUtil.parse(searchVo.getEndDate());
                     list.add(cb.between(createTimeField, start, DateUtil.endOfDay(end)));
@@ -63,5 +67,15 @@ public class TaskProcessServiceImpl implements TaskProcessService {
                 return null;
             }
         }, pageable);
+    }
+
+    @Override
+    public void runTaskUnit(DBTaskNode node, String taskId) {
+        TaskProcess process = new TaskProcess();
+        process.setTaskId(taskId);
+        process.setExecuteNode(node.getSemphone().toString());
+
+        TaskUnit.ExecuteResult result = unit.execute();
+        if(result == TaskUnit.ExecuteResult.SUCCESS)
     }
 }

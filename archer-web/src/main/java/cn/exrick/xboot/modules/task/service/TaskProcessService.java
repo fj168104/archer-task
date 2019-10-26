@@ -1,6 +1,7 @@
 package cn.exrick.xboot.modules.task.service;
 
 import cn.exrick.xboot.base.XbootBaseService;
+import cn.exrick.xboot.modules.task.engine.db.DBTaskUnit;
 import cn.exrick.xboot.modules.task.entity.TaskProcess;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,4 +21,6 @@ public interface TaskProcessService extends XbootBaseService<TaskProcess,String>
     * @return
     */
     Page<TaskProcess> findByCondition(TaskProcess taskProcess, SearchVo searchVo, Pageable pageable);
+
+    void runTaskUnit(DBTaskUnit unit);
 }
