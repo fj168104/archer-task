@@ -22,5 +22,5 @@ public interface TaskProcessService extends XbootBaseService<TaskProcess,String>
     */
     Page<TaskProcess> findByCondition(TaskProcess taskProcess, SearchVo searchVo, Pageable pageable);
 
-    void runTaskUnit(DBTaskUnit unit);
+    TaskProcess findByTaskIdAndExecuteNode(String taskId, String executeNode);
 }

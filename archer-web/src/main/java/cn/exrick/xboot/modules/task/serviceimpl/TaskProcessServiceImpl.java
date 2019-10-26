@@ -1,6 +1,7 @@
 package cn.exrick.xboot.modules.task.serviceimpl;
 
 import cn.exrick.xboot.modules.task.dao.TaskProcessDao;
+import cn.exrick.xboot.modules.task.engine.TaskNode;
 import cn.exrick.xboot.modules.task.engine.TaskUnit;
 import cn.exrick.xboot.modules.task.engine.db.DBTaskNode;
 import cn.exrick.xboot.modules.task.engine.db.DBTaskUnit;
@@ -9,7 +10,10 @@ import cn.exrick.xboot.modules.task.service.TaskProcessService;
 import cn.exrick.xboot.common.vo.SearchVo;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import com.google.api.client.util.Sets;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,9 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.lang.reflect.Field;
 
 /**
@@ -69,13 +71,40 @@ public class TaskProcessServiceImpl implements TaskProcessService {
         }, pageable);
     }
 
-    @Override
-    public void runTaskUnit(DBTaskNode node, String taskId) {
-        TaskProcess process = new TaskProcess();
-        process.setTaskId(taskId);
-        process.setExecuteNode(node.getSemphone().toString());
+	@Override
+	public TaskProcess findByTaskIdAndExecuteNode(String taskId, String executeNode) {
+        TaskProcess taskProcess = taskProcessDao.findByTaskIdAndExecuteNode(taskId, executeNode);
+        setNodeSemphoneSet(taskProcess);
+        setPreExecuteNodeSet(taskProcess);
+        setNextExecuteNodeSet(taskProcess);
+        return taskProcess;
+	}
 
-        TaskUnit.ExecuteResult result = unit.execute();
-        if(result == TaskUnit.ExecuteResult.SUCCESS)
+    private void setNodeSemphoneSet(TaskProcess taskProcess ){
+        if (StringUtils.isNotEmpty(taskProcess.getNodeSemphones())) {
+            String nodeSemphones[] = taskProcess.getNodeSemphones().trim().split(",");
+            taskProcess.setNodeSemphoneSet(new HashSet<>(Arrays.asList(nodeSemphones)));
+        } else {
+            taskProcess.setNodeSemphoneSet(Sets.newHashSet());
+        }
     }
+
+    private void setPreExecuteNodeSet(TaskProcess taskProcess ){
+        if (StringUtils.isNotEmpty(taskProcess.getPreExecuteNodes())) {
+            String preExecuteNodes[] = taskProcess.getPreExecuteNodes().trim().split(",");
+            taskProcess.setPreExecuteNodesSet(new HashSet<>(Arrays.asList(preExecuteNodes)));
+        } else {
+            taskProcess.setPreExecuteNodesSet(Sets.newHashSet());
+        }
+    }
+
+    private void setNextExecuteNodeSet(TaskProcess taskProcess ){
+        if (StringUtils.isNotEmpty(taskProcess.getNextExecuteNodes())) {
+            String nextExecuteNodes[] = taskProcess.getNextExecuteNodes().trim().split(",");
+            taskProcess.setNextExecuteNodeSet(new HashSet<>(Arrays.asList(nextExecuteNodes)));
+        } else {
+            taskProcess.setNextExecuteNodeSet(Sets.newHashSet());
+        }
+    }
+
 }

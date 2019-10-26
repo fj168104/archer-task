@@ -16,5 +16,5 @@ public interface TaskProcessDao extends XbootBaseDao<TaskProcess,String> {
 	 * @param executeNode
 	 * @return
 	 */
-	List<TaskProcess> findBytaskIdAndExecuteNode(String taskId, String executeNode);
+	TaskProcess findByTaskIdAndExecuteNode(String taskId, String executeNode);
 }
