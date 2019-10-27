@@ -1,10 +1,6 @@
 package cn.exrick.xboot.modules.task.serviceimpl;
 
-import cn.exrick.xboot.common.exception.XbootException;
 import cn.exrick.xboot.modules.task.dao.TaskProcessDao;
-import cn.exrick.xboot.modules.task.engine.TaskNode;
-import cn.exrick.xboot.modules.task.engine.TaskUnit;
-import cn.exrick.xboot.modules.task.engine.db.DBTaskNode;
 import cn.exrick.xboot.modules.task.engine.db.DBTaskUnit;
 import cn.exrick.xboot.modules.task.engine.db.unit.AutoTaskUnit;
 import cn.exrick.xboot.modules.task.engine.db.unit.ControllingUnit;
@@ -16,7 +12,6 @@ import cn.exrick.xboot.common.vo.SearchVo;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.google.api.client.util.Sets;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom.Element;
@@ -30,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.*;
 import java.util.*;
-import java.lang.reflect.Field;
 
 /**
  * 任务流程明细接口实现

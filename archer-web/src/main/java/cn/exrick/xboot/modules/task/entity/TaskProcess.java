@@ -62,7 +62,7 @@ public class TaskProcess extends XbootBaseEntity {
     private String runResult;
 
     @ApiModelProperty(value = "流程状态")
-    private Integer status = TaskConstant.PROCESS_STATUS_PENDING;
+    private Integer status = TaskConstant.TASK_STATUS_PENDING;
 
     @ApiModelProperty(value = "执行异常")
     private Boolean exception=Boolean.FALSE;

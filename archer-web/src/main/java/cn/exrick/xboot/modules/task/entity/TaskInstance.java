@@ -36,17 +36,11 @@ public class TaskInstance extends XbootBaseEntity {
     @ApiModelProperty(value = "描述/备注")
     private String description;
 
-    @ApiModelProperty(value = "是否开启")
-    private Integer started= TaskConstant.INSTANCE_UNSTART;
-
-    @ApiModelProperty(value = "是否结束")
-    private Integer finished=TaskConstant.INSTANCE_UNFINISH;
-
-    @ApiModelProperty(value = "是否停滞状态/人工处理中")
-    private Integer pending=TaskConstant.INSTANCE_UNPENDING;
+    @ApiModelProperty(value = "任务状态")
+    private Integer status = TaskConstant.TASK_STATUS_UNSTART;
 
     @ApiModelProperty(value = "任务执行节点集合")
-    private String executeNode;
+    private String executeNodes;
 
     @Transient
     @TableField(exist = false)

@@ -6,7 +6,10 @@ import cn.exrick.xboot.modules.task.service.TaskInstanceService;
 import cn.exrick.xboot.common.vo.SearchVo;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import com.google.api.client.util.Sets;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,9 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.lang.reflect.Field;
 
 /**
@@ -63,5 +64,36 @@ public class TaskInstanceServiceImpl implements TaskInstanceService {
                 return null;
             }
         }, pageable);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public TaskInstance get(String id){
+        TaskInstance instance =  getRepository().findById(id).orElse(null);
+        setExecuteNodeSet(instance);
+        return instance;
+
+    }
+
+    /**
+     * 保存
+     * @param taskInstance
+     * @return
+     */
+    @Override
+    public TaskInstance save(TaskInstance taskInstance) {
+        taskInstance.setExecuteNodes(String.join("','", taskInstance.getExecuteNodeSet()));
+        return getRepository().save(taskInstance);
+    }
+
+    private void setExecuteNodeSet(TaskInstance instance) {
+        if (StringUtils.isNotEmpty(instance.getExecuteNodes())) {
+            String nodes[] = instance.getExecuteNodes().trim().split(",");
+            instance.setExecuteNodeSet(new HashSet<>(Arrays.asList(nodes)));
+        } else {
+            instance.setExecuteNodeSet(Sets.newHashSet());
+        }
     }
 }
