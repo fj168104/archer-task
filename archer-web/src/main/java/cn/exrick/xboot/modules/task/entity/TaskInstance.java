@@ -4,6 +4,7 @@ import cn.exrick.xboot.base.XbootBaseEntity;
 import cn.exrick.xboot.common.constant.TaskConstant;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.google.api.client.util.Sets;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -12,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Feng
@@ -48,6 +50,6 @@ public class TaskInstance extends XbootBaseEntity {
 
     @Transient
     @TableField(exist = false)
-    @ApiModelProperty(value = "任务执行节点集合List")
-    private List<String> executeNodeList;
+    @ApiModelProperty(value = "任务执行节点集合Set")
+    private Set<String> executeNodeSet = Sets.newHashSet();
 }

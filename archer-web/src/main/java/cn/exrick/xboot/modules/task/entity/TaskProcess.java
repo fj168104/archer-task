@@ -2,8 +2,10 @@ package cn.exrick.xboot.modules.task.entity;
 
 import cn.exrick.xboot.base.XbootBaseEntity;
 import cn.exrick.xboot.common.constant.TaskConstant;
+import cn.exrick.xboot.modules.task.engine.db.DBTaskUnit;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.google.api.client.util.Sets;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
@@ -35,7 +37,7 @@ public class TaskProcess extends XbootBaseEntity {
     @Transient
     @TableField(exist = false)
     @ApiModelProperty(value = "收集的信号量Set")
-    private Set<String> nodeSemphoneSet;
+    private Set<String> nodeSemphoneSet = Sets.newHashSet();
 
     @ApiModelProperty(value = "收集的信号量")
     private String nodeSemphones;
@@ -43,7 +45,7 @@ public class TaskProcess extends XbootBaseEntity {
     @Transient
     @TableField(exist = false)
     @ApiModelProperty(value = "上一任务执行节点Set")
-    private Set<String> preExecuteNodesSet;
+    private Set<String> preExecuteNodesSet = Sets.newHashSet();
 
     @ApiModelProperty(value = "上一任务执行节点")
     private String preExecuteNodes;
@@ -51,7 +53,7 @@ public class TaskProcess extends XbootBaseEntity {
     @Transient
     @TableField(exist = false)
     @ApiModelProperty(value = "下一任务执行节点Set")
-    private Set<String> nextExecuteNodeSet;
+    private Set<String> nextExecuteNodeSet = Sets.newHashSet();
 
     @ApiModelProperty(value = "下一任务执行节点")
     private String nextExecuteNodes;
@@ -59,12 +61,17 @@ public class TaskProcess extends XbootBaseEntity {
     @ApiModelProperty(value = "运行结果/下一任务所需参数")
     private String runResult;
 
-    @ApiModelProperty(value = "是否结束")
-    private Integer finished= TaskConstant.INSTANCE_UNFINISH;
+    @ApiModelProperty(value = "流程状态")
+    private Integer status = TaskConstant.PROCESS_STATUS_PENDING;
 
     @ApiModelProperty(value = "执行异常")
     private Boolean exception=Boolean.FALSE;
 
     @ApiModelProperty(value = "异常描述")
     private String errorMessage;
+
+    @Transient
+    @TableField(exist = false)
+    @ApiModelProperty(value = "节点执行单元")
+    private DBTaskUnit taskUnit;
 }

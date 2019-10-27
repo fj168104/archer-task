@@ -41,13 +41,16 @@ public interface TaskConstant {
 	 */
 	Integer INSTANCE_UNPENDING = -1;
 	/**
-	 * 流程已结束
+	 * 流程运行
 	 */
-	Integer PROCESS_FINISH = 0;
+	Integer PROCESS_STATUS_RUNNING = 0;
 
 	/**
-	 * 流程未结束
+	 * 流程PENDING
 	 */
-	Integer PROCESS_UNFINISH = -1;
-
+	Integer PROCESS_STATUS_PENDING = 1;
+	/**
+	 * 流程结束
+	 */
+	Integer PROCESS_STATUS_FINISHED =2;
 }
