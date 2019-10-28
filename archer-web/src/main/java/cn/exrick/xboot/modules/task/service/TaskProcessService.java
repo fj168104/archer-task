@@ -27,5 +27,7 @@ public interface TaskProcessService extends XbootBaseService<TaskProcess,String>
 
     TaskProcess findByTaskIdAndExecuteNode(String taskId, String executeNode, Element vertexElement);
 
+    TaskProcess findByTaskIdAndExecuteNode(String taskId, String executeNode);
+
     DBTaskUnit getUnit(String nodeId, Element vertexElement);
 }

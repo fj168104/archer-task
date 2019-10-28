@@ -6,6 +6,7 @@ import cn.exrick.xboot.common.utils.ResultUtil;
 import cn.exrick.xboot.common.vo.PageVo;
 import cn.exrick.xboot.common.vo.Result;
 import cn.exrick.xboot.common.vo.SearchVo;
+import cn.exrick.xboot.modules.task.entity.TaskFlowMetedata;
 import cn.exrick.xboot.modules.task.entity.TaskInstance;
 import cn.exrick.xboot.modules.task.service.TaskInstanceService;
 import io.swagger.annotations.Api;
@@ -45,4 +46,12 @@ public class TaskInstanceController extends XbootBaseController<TaskInstance, St
         return new ResultUtil<Page<TaskInstance>>().setData(page);
     }
 
+    @PostMapping("/start/{id}")
+    @ApiOperation(value = "开启任务")
+    public Result<String> startTask(@PathVariable String id){
+
+        TaskFlowMetedata metedata = taskInstanceService.loadTask(id);
+        taskInstanceService.start(metedata);
+        return new ResultUtil<String>().setSuccessMsg("开启成功");
+    }
 }

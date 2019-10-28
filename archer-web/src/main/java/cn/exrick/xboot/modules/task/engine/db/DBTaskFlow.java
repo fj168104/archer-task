@@ -11,7 +11,6 @@ import cn.exrick.xboot.modules.task.entity.TaskProcess;
 import cn.exrick.xboot.modules.task.service.TaskInstanceService;
 import cn.exrick.xboot.modules.task.service.TaskModelService;
 import cn.exrick.xboot.modules.task.service.TaskProcessService;
-import cn.hutool.core.collection.ConcurrentHashSet;
 import com.google.api.client.util.Sets;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +19,9 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.xml.sax.InputSource;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Created by feng on 2019/10/20 0009
@@ -41,22 +38,8 @@ public class DBTaskFlow extends TaskFlowAdapter {
 
     private TaskProcessService processService;
 
-
     private Map<String, Element> vertexMap = Maps.newHashMap();
     private Set<Element> edgeSet = Sets.newHashSet();
-
-    private Integer executingTaskCount = 0;
-
-    /**
-     * 执行器
-     */
-    private ExecutorService executor;
-    /**
-     * 控制任务等待
-     */
-    private boolean isWaiting;
-
-    private ConcurrentHashSet<MemoryTaskNode> executingTaskNode = new ConcurrentHashSet<>();
 
     public DBTaskFlow(String taskInstanceId, TaskModelService modelService, TaskInstanceService taskInstanceService, TaskProcessService processService) {
         this.modelService = modelService;
@@ -137,6 +120,13 @@ public class DBTaskFlow extends TaskFlowAdapter {
     }
 
     private void executeNode(String nodeId) {
+        //检查instance状态
+        instance = taskInstanceService.get(instance.getId());
+        if(instance.getStatus().equals(TaskConstant.TASK_STATUS_PENDING)) {
+            log.info("任务已暂停：taskId=" + instance.getId());
+            return;
+        }
+
         TaskProcess taskProcess = processService.findByTaskIdAndExecuteNode(instance.getId(), nodeId,
                 vertexMap.get(nodeId).getChild("Object"));
         /**判断信号量是否收集完成**/
@@ -145,14 +135,20 @@ public class DBTaskFlow extends TaskFlowAdapter {
             return;
         }
 
+        TaskUnit.ExecuteResult result;
         //信号量收集完成，执行任务
-        taskProcess.setStatus(TaskConstant.TASK_STATUS_RUNNING);
-        processService.save(taskProcess);
+        if(taskProcess.getStatus().equals(TaskConstant.NODE_STATUS_FINISHED)){
+            result = TaskUnit.ExecuteResult.SUCCESS;
+        }else {
+            taskProcess.setStatus(TaskConstant.NODE_STATUS_RUNNING);
+            processService.save(taskProcess);
+            //任务执行完成，更新任务实例的状态, 任务暂时仅支持单进程运行，未考虑分布式的一致性
+            result = taskProcess.getTaskUnit().execute();
+        }
 
-        //任务执行完成，更新任务实例的状态, 任务暂时仅支持单进程运行，未考虑分布式的一致性
-        TaskUnit.ExecuteResult result = taskProcess.getTaskUnit().execute();
+
         if (result == TaskUnit.ExecuteResult.SUCCESS) {
-            taskProcess.setStatus(TaskConstant.TASK_STATUS_FINISHED);
+            taskProcess.setStatus(TaskConstant.NODE_STATUS_FINISHED);
             //增加后继节点
             for (Element element : edgeSet) {
                 if (element.getAttributeValue("source").equals(taskProcess.getExecuteNode())) {
@@ -160,30 +156,32 @@ public class DBTaskFlow extends TaskFlowAdapter {
                     if (element.getAttributeValue("type").equals("MERGE") &&
                             !element.getAttributeValue("value").equals(taskProcess.getRunResult()))
                         continue;
+                    String nextNodeId = element.getAttributeValue("target");
                     TaskProcess nextProcess = new TaskProcess();
                     nextProcess.setTaskId(instance.getId());
-                    nextProcess.setExecuteNode(nodeId);
+                    nextProcess.setExecuteNode(nextNodeId);
                     nextProcess.getNodeSemphoneSet().add(nodeId);
                     for (Element elementPre : edgeSet) {
-                        if (elementPre.getAttributeValue("target").equals(element.getAttributeValue("target"))) {
+                        if (elementPre.getAttributeValue("target").equals(nextNodeId)) {
                             nextProcess.getPreExecuteNodesSet().add(elementPre.getAttributeValue("source"));
                         }
                     }
                     processService.save(nextProcess);
                     //添加到任务实例中执行的节点集合
-                    instance.getExecuteNodeSet().add(nextProcess.getExecuteNode());
-                    taskProcess.getNextExecuteNodeSet().add(element.getAttributeValue("target"));
+                    instance.getExecuteNodeSet().add(nextNodeId);
+                    taskProcess.getNextExecuteNodeSet().add(nextNodeId);
                 }
             }
             processService.save(taskProcess);
-            //更新 task instance
+            //从 task instance移除当前节点
             instance.getExecuteNodeSet().remove(nodeId);
+            taskInstanceService.save(instance);
             //分发后继节点
             for (String nextNodeId : taskProcess.getNextExecuteNodeSet()) {
                 executeNode(nextNodeId);
             }
         } else if (result == TaskUnit.ExecuteResult.PENDING) {
-            taskProcess.setStatus(TaskConstant.TASK_STATUS_PENDING);
+            taskProcess.setStatus(TaskConstant.NODE_STATUS_PENDING);
             processService.save(taskProcess);
         } else {
             throw new XbootException("无法处理的异常");
@@ -198,7 +196,7 @@ public class DBTaskFlow extends TaskFlowAdapter {
 
     @Override
     public void suspend() {
-        isWaiting = true;
+
     }
 
     @Override
@@ -208,7 +206,7 @@ public class DBTaskFlow extends TaskFlowAdapter {
 
     @Override
     public Set<MemoryTaskNode> queryPhase() {
-        return executingTaskNode;
+        return null;
     }
 
     /**

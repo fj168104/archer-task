@@ -89,11 +89,17 @@ public class TaskProcessServiceImpl implements TaskProcessService {
     }
 
     @Override
-    public TaskProcess findByTaskIdAndExecuteNode(String taskId, String executeNode, Element vertexElement) {
+    public TaskProcess findByTaskIdAndExecuteNode(String taskId, String executeNode) {
         TaskProcess taskProcess = taskProcessDao.findByTaskIdAndExecuteNode(taskId, executeNode);
         setNodeSemphoneSet(taskProcess);
         setPreExecuteNodeSet(taskProcess);
         setNextExecuteNodeSet(taskProcess);
+        return taskProcess;
+    }
+
+    @Override
+    public TaskProcess findByTaskIdAndExecuteNode(String taskId, String executeNode, Element vertexElement) {
+        TaskProcess taskProcess = findByTaskIdAndExecuteNode(taskId, executeNode);
         taskProcess.setTaskUnit(getUnit(executeNode, vertexElement));
         return taskProcess;
     }

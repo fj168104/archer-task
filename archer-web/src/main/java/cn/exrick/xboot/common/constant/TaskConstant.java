@@ -32,4 +32,20 @@ public interface TaskConstant {
      * 任务结束
      */
     Integer TASK_STATUS_FINISHED = 3;
+
+
+    /**
+     * 节点已运行
+     */
+    Integer NODE_STATUS_RUNNING = 0;
+
+    /**
+     * 节点pending中
+     */
+    Integer NODE_STATUS_PENDING = 1;
+
+    /**
+     * 节点结束
+     */
+    Integer NODE_STATUS_FINISHED = 2;
 }
