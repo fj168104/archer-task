@@ -29,8 +29,8 @@ public class TaskModel extends XbootBaseEntity {
     @ApiModelProperty(value = "标识")
     private String modelKey;
 
-    @ApiModelProperty(value = "当前版本")
-    private Integer version;
+    @ApiModelProperty(value = "版本号")
+    private Integer version = 1;
 
     @ApiModelProperty(value = "描述/备注")
     private String description;

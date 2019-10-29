@@ -32,14 +32,18 @@
     <script type="text/javascript" src="mxgraph/src/js/mxClient.js"></script>
     <script type="text/javascript" src="mxgraph/resources/js/data.js"></script>
     <script type="text/javascript" src="mxgraph/resources/js/FileSaver.js"></script>
+    <script type="text/javascript" src="mxgraph/axios.min.js"></script>
 
     <!-- Example code -->
     <script type="text/javascript" content="">
 		var graph = null;
+		var modelId = null;
+		var accessToken = null;
+		var modelXml=null;
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
-		function main(container, outline, toolbar, sidebar, status) {
+		async function main(container, outline, toolbar, sidebar, status) {
 			// Checks if the browser is supported
 			if (!mxClient.isBrowserSupported()) {
 				// Displays an error message if the browser is not supported.
@@ -123,14 +127,23 @@
 				});
 				addToolbarButton(editor, toolbar, 'import', '导入', 'mxgraph/resources/images/export1.png');
 
-				// Defines a new export action
-				editor.addAction('save', function (editor, cell) {
+				// Defines a new save action
+				editor.addAction('export', function (editor, cell) {
 					var enc = new mxCodec(mxUtils.createXmlDocument());
 					var node = enc.encode(editor.graph.getModel());
 					let xml = mxUtils.getPrettyXml(node);
 					console.info(xml);
 					const blob = new Blob([xml], {type: "text/plain;charset=utf-8"});
 					saveAs(blob, "myports.xml");
+				});
+				addToolbarButton(editor, toolbar, 'export', '导出', 'mxgraph/resources/images/export1.png');
+
+				// Defines a new export action
+				editor.addAction('save', function (editor, cell) {
+					var enc = new mxCodec(mxUtils.createXmlDocument());
+					var node = enc.encode(editor.graph.getModel());
+					modelXml = mxUtils.getPrettyXml(node);
+                    saveModelXml(modelId, modelXml, accessToken);
 				});
 				addToolbarButton(editor, toolbar, 'save', '保存', 'mxgraph/resources/images/export1.png');
 
@@ -169,6 +182,13 @@
 					}
 				}
 			}
+
+			//初始化数据
+            modelId = getQueryString("modelId");
+			accessToken = getQueryString("accessToken");
+			modelXml = await getModelXml(modelId, accessToken);
+			console.info(modelXml);
+			importModelXML(modelXml);
 		};
 
 		//********************************************************************************************//
@@ -637,6 +657,41 @@
 				const edge = graph.createEdge();
 				return new mxCellState(graph.view, edge, graph.getCellStyle(edge));
 			};
+		}
+
+		async function getModelXml(modelId, accessToken) {
+			return await axios({
+				method: 'get',
+				url: `/xboot/taskModel/getXml/${modelId}`,
+				headers: {
+					'accessToken': accessToken
+				}
+			});
+		}
+
+		async function saveModelXml(modelId, modelXml, accessToken) {
+			await axios({
+				method: 'post',
+				url: `/xboot/taskModel/saveXml/${modelId}`,
+				params: modelXml,
+				headers: {
+					'accessToken': accessToken
+				}
+			});
+			alert("执行成功");
+		}
+
+		/**
+		 * 获取传入参数
+		 * @param name
+		 * @returns {null}
+		 * @constructor
+		 */
+		function getQueryString(name) {
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+			var r = window.location.search.substr(1).match(reg);//search,查询？后面的参数，并匹配正则
+			if (r != null) return unescape(r[2]);
+			return null;
 		}
     </script>
 </head>

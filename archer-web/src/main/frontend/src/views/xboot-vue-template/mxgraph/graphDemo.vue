@@ -379,7 +379,9 @@ export default {
         });
         return;
       }
-      this.modelerUrl = `${this.domain}/myports.html?&accessToken=${this.getStore("accessToken")}&time=${new Date()}`;
+      this.modelerUrl = `${this.domain}/myports.html?modelId=${
+		  v.id
+		  }&accessToken=${this.getStore("accessToken")}&time=${new Date()}`;
       // this.showModeler = true;
       this.graphVisible = true;
       this.modelerLoading = false;
