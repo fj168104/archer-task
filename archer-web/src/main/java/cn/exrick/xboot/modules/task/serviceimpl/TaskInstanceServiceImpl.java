@@ -99,11 +99,11 @@ public class TaskInstanceServiceImpl implements TaskInstanceService {
 		TaskInstance instance = get(instanceId);
 		metedata.setInstance(instance);
 		if (instance.getStatus().equals(TaskConstant.TASK_STATUS_FINISHED)) {
-			log.warn("任务已结束，不能操作");
+			throw new XbootException("流程已经结束: instanceId=" + instance.getId());
 		}
 
 		if (instance.getStatus().equals(TaskConstant.TASK_STATUS_RUNNING)) {
-			log.warn("任务运行中，不能操作");
+			throw new XbootException("流程还在运行中，不能启动: instanceId=" + instance.getId());
 		}
 
 		Document doc = getDocument(instance.getModelId());
@@ -136,10 +136,10 @@ public class TaskInstanceServiceImpl implements TaskInstanceService {
 			executeNode(createStartNode(metedata), metedata);
 			updateTaskStatus(instance.getId());
 		} else if (instance.getStatus().equals(TaskConstant.TASK_STATUS_FINISHED)) {
-			log.warn("流程已经结束: instanceId=" + instance.getId());
+			throw new XbootException("流程已经结束: instanceId=" + instance.getId());
 
 		} else if (instance.getStatus().equals(TaskConstant.TASK_STATUS_RUNNING)) {
-			log.warn("流程还在运行中，不能启动: instanceId=" + instance.getId());
+			throw new XbootException("流程还在运行中，不能启动: instanceId=" + instance.getId());
 		} else if (instance.getStatus().equals(TaskConstant.TASK_STATUS_PENDING)) {
 			instance.getExecuteNodeSet().forEach(item -> executeNode(item, metedata));
 			updateTaskStatus(instance.getId());

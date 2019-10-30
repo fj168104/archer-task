@@ -1,19 +1,17 @@
 package cn.exrick.xboot.modules.task.controller;
 
-import cn.exrick.xboot.base.XbootBaseController;
 import cn.exrick.xboot.common.constant.CommonConstant;
-import cn.exrick.xboot.common.constant.TaskConstant;
 import cn.exrick.xboot.common.utils.PageUtil;
 import cn.exrick.xboot.common.utils.ResultUtil;
 import cn.exrick.xboot.common.vo.PageVo;
 import cn.exrick.xboot.common.vo.Result;
 import cn.exrick.xboot.common.vo.SearchVo;
-import cn.exrick.xboot.modules.activiti.entity.ActModel;
-import cn.exrick.xboot.modules.base.entity.UserRole;
 import cn.exrick.xboot.modules.task.entity.TaskModel;
 import cn.exrick.xboot.modules.task.service.TaskModelService;
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Exrick
@@ -47,6 +46,28 @@ public class TaskModelController {
 		return new ResultUtil<Page<TaskModel>>().setData(page);
 	}
 
+	@GetMapping("/getAllList")
+	@ApiOperation(value = "获取全部已发布模型")
+	public Result<List<Map<String, Set<Integer>>>> getModelKeys() {
+		List<Map<String, Set<Integer>>> modelKeyList = Lists.newArrayList();
+		List<TaskModel> unReleaseModels = taskModelService.findByRelease(Boolean.FALSE);
+		for (TaskModel model : unReleaseModels) {
+			Set< Integer> versionSets = Sets.newHashSet();
+			List<TaskModel> taskModels = taskModelService.findByModelKey(model.getModelKey());
+			taskModels.forEach(item -> {
+				if(item.getRelease().equals(Boolean.TRUE)){
+					versionSets.add(item.getVersion());
+				}
+			});
+			if(versionSets.size()>0) {
+				Map<String, Set<Integer>> map = Maps.newHashMap();
+				map.put(model.getModelKey(), versionSets);
+				modelKeyList.add(map);
+			}
+		}
+
+		return ResultUtil.data(modelKeyList);
+	}
 
 	@GetMapping("/getXml/{id}")
 	@ApiOperation(value = "获取ModelXML")
@@ -71,7 +92,7 @@ public class TaskModelController {
 	@ApiOperation(value = "模型发布")
 	public Result<Object> releaseModel(@PathVariable String id) {
 		TaskModel model = taskModelService.get(id);
-		model.setIsRelease(Boolean.TRUE);
+		model.setRelease(Boolean.TRUE);
 		taskModelService.save(model);
 		//copy model and version++
 		model.setId(null);

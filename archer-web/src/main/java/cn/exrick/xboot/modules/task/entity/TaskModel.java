@@ -36,7 +36,7 @@ public class TaskModel extends XbootBaseEntity {
     private String description;
 
     @ApiModelProperty(value = "是否发布")
-    private Boolean isRelease= Boolean.FALSE;
+    private Boolean release= Boolean.FALSE;
 
     @ApiModelProperty(value = "是否启用 0启用 -1禁用")
     private Integer modelStatus = CommonConstant.STATUS_NORMAL;

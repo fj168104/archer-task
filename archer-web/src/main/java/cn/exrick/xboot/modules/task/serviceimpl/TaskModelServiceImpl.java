@@ -69,4 +69,9 @@ public class TaskModelServiceImpl implements TaskModelService {
     public List<TaskModel> findByModelKey(String modelKey) {
         return taskModelDao.findByModelKey(modelKey);
     }
+
+    @Override
+    public List<TaskModel> findByRelease(Boolean release) {
+        return taskModelDao.findByRelease(release);
+    }
 }

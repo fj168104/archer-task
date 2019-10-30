@@ -188,8 +188,10 @@
 			accessToken = getQueryString("accessToken");
 			modelXml = await getModelXml(modelId, accessToken);
 			console.info(modelXml);
-			importModelXML(modelXml);
-		};
+			if(modelXml){
+				importModelXML(modelXml);
+            }
+		}
 
 		//********************************************************************************************//
 		function addToolbarButton(editor, toolbar, action, label, image, isTransparent) {
