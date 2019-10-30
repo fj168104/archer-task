@@ -54,8 +54,13 @@ public class TaskProcessServiceImpl implements TaskProcessService {
 
                 // TODO 可添加你的其他搜索过滤条件 默认已有创建时间过滤
                 Path<Date> createTimeField = root.get("createTime");
+                Path<String> taskId = root.get("taskId");
 
                 List<Predicate> list = new ArrayList<Predicate>();
+
+                if(taskProcess.getTaskId()!=null){
+                    list.add(cb.equal(taskId, taskProcess.getTaskId()));
+                }
 
                 //创建时间
                 if (StrUtil.isNotBlank(searchVo.getStartDate()) && StrUtil.isNotBlank(searchVo.getEndDate())) {

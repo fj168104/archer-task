@@ -24,16 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Api(description = "任务流程明细管理接口")
 @RequestMapping("/xboot/taskProcess")
 @Transactional
-public class TaskProcessController extends XbootBaseController<TaskProcess, String> {
+public class TaskProcessController {
 
     @Autowired
     private TaskProcessService taskProcessService;
-
-    @Override
-    public TaskProcessService getService() {
-        return taskProcessService;
-    }
-
 
     @RequestMapping(value = "/getByCondition", method = RequestMethod.GET)
     @ApiOperation(value = "多条件分页获取")
