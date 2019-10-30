@@ -11,4 +11,5 @@ import java.util.List;
  */
 public interface TaskModelDao extends XbootBaseDao<TaskModel,String> {
 
+	List<TaskModel> findByModelKey(String modelKey);
 }

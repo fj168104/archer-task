@@ -23,4 +23,6 @@ public interface TaskModelService extends XbootBaseService<TaskModel,String> {
     */
     Page<TaskModel> findByCondition(TaskModel taskModel, SearchVo searchVo, Pageable pageable);
 
+    List<TaskModel> findByModelKey(String modelKey);
+
 }

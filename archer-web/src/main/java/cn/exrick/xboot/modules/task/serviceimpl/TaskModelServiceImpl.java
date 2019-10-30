@@ -64,4 +64,9 @@ public class TaskModelServiceImpl implements TaskModelService {
             }
         }, pageable);
     }
+
+    @Override
+    public List<TaskModel> findByModelKey(String modelKey) {
+        return taskModelDao.findByModelKey(modelKey);
+    }
 }
