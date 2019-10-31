@@ -66,7 +66,7 @@ public class TaskInstanceController {
 		return ResultUtil.success("暂停成功");
 	}
 
-	@PostMapping("/queryPhase/{id}")
+	@GetMapping("/queryPhase/{id}")
 	@ApiOperation(value = "查询任务执行节点")
 	public Result<Set<TaskProcess>> queryPhase(@PathVariable String id) {
 		Set<String> executeNodeSet = taskInstanceService.queryPhase(id);
