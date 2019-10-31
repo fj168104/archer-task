@@ -8,6 +8,7 @@ import cn.exrick.xboot.common.vo.Result;
 import cn.exrick.xboot.common.vo.SearchVo;
 import cn.exrick.xboot.modules.task.entity.TaskProcess;
 import cn.exrick.xboot.modules.task.service.TaskProcessService;
+import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,16 @@ public class TaskProcessController {
 
         Page<TaskProcess> page = taskProcessService.findByCondition(taskProcess, searchVo, PageUtil.initPage(pageVo));
         return new ResultUtil<Page<TaskProcess>>().setData(page);
+    }
+
+    @RequestMapping(value = "/update", method = RequestMethod.PUT)
+    @ApiOperation(value = "更新数据")
+    public Result<Object> update(@ModelAttribute TaskProcess entity) {
+        if (StrUtil.isBlank(entity.getId())) {
+            return ResultUtil.error("缺少必需表单字段");
+        }
+        taskProcessService.update(entity);
+        return ResultUtil.success("更新成功");
     }
 
 }

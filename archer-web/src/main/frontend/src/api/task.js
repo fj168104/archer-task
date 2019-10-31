@@ -68,7 +68,7 @@ export const addInstance = (params) => {
     return postRequest('/taskInstance/add', params)
 }
 
-// 添加任务实例
+// 更新任务实例
 export const updateInstance = (params) => {
     return postRequest('/taskInstance/update', params)
 }
@@ -83,4 +83,9 @@ export const deleteInstanceByIds = (ids) => {
 // 获取任务流程列表数据
 export const getProcessList = (params) => {
     return postRequest('/taskProcess/getByCondition', params)
+}
+
+// 更新流程
+export const updateProcess = (params) => {
+    return postRequest('/taskProcess/update', params)
 }

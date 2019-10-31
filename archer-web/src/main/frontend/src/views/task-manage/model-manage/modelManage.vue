@@ -155,7 +155,7 @@
 										},
 										on: {
 											click: () => {
-												this.design(params.row);
+												this.draw(params.row);
 											}
 										}
 									},
@@ -368,7 +368,7 @@
 				});
 			},
 
-          design(v) {
+          draw(v) {
             this.modalType = 0;
             this.modalTitle = "添加";
             this.$refs.form.resetFields();
