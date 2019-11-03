@@ -55,9 +55,6 @@ public class TaskInstanceServiceImpl implements TaskInstanceService {
 	private TaskModelService modelService;
 
 	@Autowired
-	private TaskInstanceService taskInstanceService;
-
-	@Autowired
 	private TaskProcessService processService;
 
 	@Override
@@ -161,7 +158,7 @@ public class TaskInstanceServiceImpl implements TaskInstanceService {
 				break;
 			}
 		}
-		taskInstanceService.save(instance);
+		save(instance);
 		//新建一条流程记录
 		TaskProcess taskProcess = new TaskProcess();
 		taskProcess.setTaskId(instance.getId());
@@ -224,7 +221,7 @@ public class TaskInstanceServiceImpl implements TaskInstanceService {
 	private void executeNode(String nodeId, TaskFlowMetedata metedata) {
 
 		//检查instance状态
-		TaskInstance instance = taskInstanceService.get(metedata.getInstance().getId());
+		TaskInstance instance = get(metedata.getInstance().getId());
 		metedata.setInstance(instance);
 		Map<String, Element> vertexMap = metedata.getVertexMap();
 		Set<Element> edgeSet = metedata.getEdgeSet();
@@ -281,7 +278,7 @@ public class TaskInstanceServiceImpl implements TaskInstanceService {
 			processService.save(taskProcess);
 			//从 task instance移除当前节点
 			instance.getExecuteNodeSet().remove(nodeId);
-			taskInstanceService.save(instance);
+			save(instance);
 			//分发后继节点
 			for (String nextNodeId : taskProcess.getNextExecuteNodeSet()) {
 				executeNode(nextNodeId, metedata);

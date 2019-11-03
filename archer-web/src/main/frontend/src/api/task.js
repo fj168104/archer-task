@@ -3,12 +3,12 @@ import { getRequest, postRequest, putRequest, deleteRequest } from '@/libs/axios
 
 // 获取模型列表数据
 export const getModelList = (params) => {
-    return postRequest('/taskModel/getByCondition', params)
+    return getRequest('/taskModel/getByCondition', params)
 }
 
 // 获取全部已发布模型
 export const getAllModelList = () => {
-    return postRequest('/taskModel/getAllList', params)
+    return getRequest('/taskModel/getAllList', params)
 }
 
 // 获取ModelXML
@@ -45,7 +45,7 @@ export const deleteModelByIds = (ids) => {
 /**********************************************************************/
 // 获取任务实例列表数据
 export const getInstanceList = (params) => {
-    return postRequest('/taskInstance/getByCondition', params)
+    return getRequest('/taskInstance/getByCondition', params)
 }
 
 // 开启任务
@@ -82,7 +82,7 @@ export const deleteInstanceByIds = (ids) => {
 /**********************************************************************/
 // 获取任务流程列表数据
 export const getProcessList = (params) => {
-    return postRequest('/taskProcess/getByCondition', params)
+    return getRequest('/taskProcess/getByCondition', params)
 }
 
 // 更新流程

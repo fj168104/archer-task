@@ -8,6 +8,7 @@ import cn.exrick.xboot.common.vo.Result;
 import cn.exrick.xboot.common.vo.SearchVo;
 import cn.exrick.xboot.modules.task.entity.TaskModel;
 import cn.exrick.xboot.modules.task.service.TaskModelService;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -17,6 +18,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -114,7 +116,7 @@ public class TaskModelController {
 			return new ResultUtil<Object>().setErrorMsg("缺少必需表单字段");
 		}
 
-		if (taskModelService.findByModelKey(model.getModelKey()) != null) {
+		if (CollectionUtil.isNotEmpty(taskModelService.findByModelKey(model.getModelKey()))) {
 			return new ResultUtil<Object>().setErrorMsg("该模型标识已存在");
 		}
 		TaskModel taskModel = taskModelService.save(model);
