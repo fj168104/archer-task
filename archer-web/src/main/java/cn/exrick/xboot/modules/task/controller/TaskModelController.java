@@ -48,20 +48,25 @@ public class TaskModelController {
 
 	@GetMapping("/getAllList")
 	@ApiOperation(value = "获取全部已发布模型")
-	public Result<List<Map<String, Set<Integer>>>> getModelKeys() {
-		List<Map<String, Set<Integer>>> modelKeyList = Lists.newArrayList();
+	public Result<List<Map<String, Object>>> getModelKeys() {
+		List<Map<String, Object>> modelKeyList = Lists.newArrayList();
 		List<TaskModel> unReleaseModels = taskModelService.findByRelease(Boolean.FALSE);
 		for (TaskModel model : unReleaseModels) {
-			Set< Integer> versionSets = Sets.newHashSet();
+			Set< Object> versionSets = Sets.newHashSet();
 			List<TaskModel> taskModels = taskModelService.findByModelKey(model.getModelKey());
 			taskModels.forEach(item -> {
 				if(item.getRelease().equals(Boolean.TRUE)){
-					versionSets.add(item.getVersion());
+					Map<String, Object> map = Maps.newHashMap();
+					map.put("version", item.getVersion());
+					map.put("modelId", item.getId());
+					versionSets.add(map);
 				}
 			});
 			if(versionSets.size()>0) {
-				Map<String, Set<Integer>> map = Maps.newHashMap();
-				map.put(model.getModelKey(), versionSets);
+				Map<String, Object> map = Maps.newHashMap();
+				map.put("modelKey", model.getModelKey());
+				map.put("modelName", model.getModelName());
+				map.put("versionAndId", versionSets);
 				modelKeyList.add(map);
 			}
 		}

@@ -65,6 +65,34 @@
                 <Button type="primary" :loading="submitLoading" @click="handleSubmit">提交</Button>
             </div>
         </Modal>
+
+        <Modal :closable="false"
+               @on-cancel="handleClose"
+               v-model="graphVisible"
+               :mask-closable="true"
+               footer-hide
+               :fullscreen="true">
+            <div slot="header">
+                <div class="ivu-modal-header-inner">mxgraph 任务设计</div>
+                <a @click="handleClose" class="ivu-modal-close">
+                    <Icon type="ios-close" size="31" class="ivu-icon-ios-close"/>
+                </a>
+            </div>
+
+            <div style="position:relative;height: 100%;">
+                <iframe
+                        id="iframe"
+                        :src="modelerUrl"
+                        frameborder="0"
+                        width="100%"
+                        height="100%"
+                        scrolling="auto"
+                ></iframe>
+                <Spin fix size="large" v-if="modelerLoading"></Spin>
+            </div>
+
+        </Modal>
+
     </div>
 </template>
 
@@ -72,6 +100,7 @@
 	import {
 		getModelList, getXml, saveXml, releaseModel, addModel, deleteModelByIds
 	} from "@/api/task";
+	import { getOtherSet } from "@/api/index";
 
 	export default {
 		name: "task-model",
@@ -81,7 +110,11 @@
 				loading: true, // 表单加载状态
 				modalType: 0, // 添加或编辑标识
 				modalVisible: false, // 添加或编辑显示
+				graphVisible: false,
+				modelerLoading: false,
 				modalTitle: "", // 添加或编辑标题
+				domain: "",
+
 				drop: false,
 				dropDownContent: "展开",
 				dropDownIcon: "ios-arrow-down",
@@ -254,6 +287,15 @@
 				}
 				this.drop = !this.drop;
 			},
+
+			getDomain() {
+				getOtherSet().then(res => {
+					if (res.result) {
+						this.domain = res.result.domain;
+					}
+				});
+			},
+
 			getDataList() {
 				this.loading = true;
 				getModelList(this.searchForm).then(res => {
@@ -292,11 +334,7 @@
 							//     this.modalVisible = false;
 							//   }
 							// });
-							// 模拟请求成功
-							this.submitLoading = false;
-							this.$Message.success("操作成功");
-							this.getDataList();
-							this.modalVisible = false;
+
 						}
 					}
 				});
@@ -368,13 +406,60 @@
 				});
 			},
 
-          draw(v) {
-            this.modalType = 0;
-            this.modalTitle = "添加";
-            this.$refs.form.resetFields();
-            delete this.form.id;
-            this.modalVisible = true;
-          },
+			handleClose() {
+				this.$Modal.confirm({
+					title: "确认关闭",
+					content: "请记得点击左上角保存按钮，确定关闭编辑器?",
+					onOk: () => {
+						this.getDataList();
+						this.graphVisible = false;
+					},
+					onCancel: ()=> {
+						this.$Message.success("操作取消");
+					}
+				});
+			},
+
+			draw(v) {
+				this.modalType = 2;
+				this.modalTitle = "任务设计";
+				this.$refs.form.resetFields();
+
+				if (!this.domain) {
+					this.$Modal.confirm({
+						title: "您还未配置访问域名",
+						content: "您还未配置应用部署访问域名，是否现在立即去配置?",
+						onOk: () => {
+							this.$router.push({
+								name: "setting",
+								query: { name: "other" }
+							});
+						}
+					});
+					return;
+				}
+				this.modelerUrl = `${this.domain}/myports.html?modelId=${
+					v.id
+				}&accessToken=${this.getStore("accessToken")}&time=${new Date()}`;
+				// this.showModeler = true;
+				this.graphVisible = true;
+				this.modelerLoading = false;
+				let that = this;
+				// 判断iframe是否加载完毕
+				let iframe = document.getElementById("iframe");
+				if (iframe.attachEvent) {
+					iframe.attachEvent("onload", function() {
+						//iframe加载完成后你需要进行的操作
+						that.modelerLoading = false;
+					});
+				} else {
+					iframe.onload = function() {
+						//iframe加载完成后你需要进行的操作
+						that.modelerLoading = false;
+					};
+				}
+
+			},
 
           async release(v) {
             this.$Modal.confirm({
