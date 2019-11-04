@@ -186,7 +186,8 @@
 			//初始化数据
             modelId = getQueryString("modelId");
 			accessToken = getQueryString("accessToken");
-			modelXml = await getModelXml(modelId, accessToken);
+			let res = await getModelXml(modelId, accessToken);
+			modelXml = res.data.result;
 			console.info(modelXml);
 			if(modelXml){
 				importModelXML(modelXml);
@@ -675,7 +676,7 @@
 			await axios({
 				method: 'post',
 				url: `/xboot/taskModel/saveXml/${modelId}`,
-				params: modelXml,
+				params: {'modelXml': modelXml},
 				headers: {
 					'accessToken': accessToken
 				}

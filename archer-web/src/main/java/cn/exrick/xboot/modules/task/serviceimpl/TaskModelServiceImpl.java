@@ -71,7 +71,7 @@ public class TaskModelServiceImpl implements TaskModelService {
     }
 
     @Override
-    public List<TaskModel> findByRelease(Boolean release) {
-        return taskModelDao.findByRelease(release);
+    public List<TaskModel> findByModelRelease(boolean release) {
+        return taskModelDao.findByModelRelease(release);
     }
 }

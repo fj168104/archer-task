@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableConfigurationProperties(ActivitiExtendProperties.class)
 public class ActivitiConfig {
-
     @Autowired
     private ActivitiExtendProperties properties;
 

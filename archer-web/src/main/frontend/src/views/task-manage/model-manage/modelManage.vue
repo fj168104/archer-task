@@ -100,7 +100,7 @@
 	import {
 		getModelList, getXml, saveXml, releaseModel, addModel, deleteModelByIds
 	} from "@/api/task";
-	import { getOtherSet } from "@/api/index";
+	import {getOtherSet} from "@/api/index";
 
 	export default {
 		name: "task-model",
@@ -146,11 +146,6 @@
 						align: "center"
 					},
 					{
-						type: "index",
-						width: 60,
-						align: "center"
-					},
-					{
 						title: "模型名称",
 						key: "modelName",
 						minWidth: 120,
@@ -164,15 +159,18 @@
 					},
 					{
 						title: "当前版本",
-						key: "version",
-						minWidth: 120,
+						key: "modelVersion",
+						minWidth: 20,
 						sortable: true,
+						render: (h, params) => {
+							return h('span', `V-${params.row.modelVersion}`);
+						}
 					},
 					{
 						title: "操作",
 						key: "action",
 						align: "center",
-						width: 200,
+						minWidth: 200,
 						render: (h, params) => {
 							return h("div", [
 								h(
@@ -239,6 +237,7 @@
 		},
 		methods: {
 			init() {
+				this.getDomain();
 				this.getDataList();
 			},
 			changePage(v) {
@@ -305,9 +304,6 @@
 						this.total = res.result.totalElements;
 					}
 				});
-
-				this.total = this.data.length;
-				this.loading = false;
 			},
 			handleSubmit() {
 				this.$refs.form.validate(valid => {
@@ -317,12 +313,12 @@
 							// 添加 避免编辑后传入id等数据 记得删除
 							delete this.form.id;
 							addModel(this.form).then(res => {
-							  this.submitLoading = false;
-							  if (res.success) {
-							    this.$Message.success("操作成功");
-							    this.getDataList();
-							    this.modalVisible = false;
-							  }
+								this.submitLoading = false;
+								if (res.success) {
+									this.$Message.success("操作成功");
+									this.getDataList();
+									this.modalVisible = false;
+								}
 							});
 						} else {
 							// 编辑
@@ -370,10 +366,11 @@
 					onOk: () => {
 						// 删除
 						deleteModelByIds(v.id).then(res => {
-						  if (res.success) {
-						    this.$Message.success("操作成功");
-						    this.getDataList();
-						  }
+							if (res.success) {
+								this.$Modal.remove();
+								this.$Message.success("操作成功");
+								this.getDataList();
+							}
 						});
 					}
 				});
@@ -395,12 +392,12 @@
 						ids = ids.substring(0, ids.length - 1);
 						// 批量删除
 						deleteModelByIds(ids).then(res => {
-						  this.$Modal.remove();
-						  if (res.success) {
-						    this.$Message.success("操作成功");
-						    this.clearSelectAll();
-						    this.getDataList();
-						  }
+							this.$Modal.remove();
+							if (res.success) {
+								this.$Message.success("操作成功");
+								this.clearSelectAll();
+								this.getDataList();
+							}
 						});
 					}
 				});
@@ -414,7 +411,7 @@
 						this.getDataList();
 						this.graphVisible = false;
 					},
-					onCancel: ()=> {
+					onCancel: () => {
 						this.$Message.success("操作取消");
 					}
 				});
@@ -432,7 +429,7 @@
 						onOk: () => {
 							this.$router.push({
 								name: "setting",
-								query: { name: "other" }
+								query: {name: "other"}
 							});
 						}
 					});
@@ -448,12 +445,12 @@
 				// 判断iframe是否加载完毕
 				let iframe = document.getElementById("iframe");
 				if (iframe.attachEvent) {
-					iframe.attachEvent("onload", function() {
+					iframe.attachEvent("onload", function () {
 						//iframe加载完成后你需要进行的操作
 						that.modelerLoading = false;
 					});
 				} else {
-					iframe.onload = function() {
+					iframe.onload = function () {
 						//iframe加载完成后你需要进行的操作
 						that.modelerLoading = false;
 					};
@@ -461,22 +458,23 @@
 
 			},
 
-          async release(v) {
-            this.$Modal.confirm({
-              title: "确认发布",
-              content: `您确认要发布 " + ${v.modelName}-${v.version}" ?`,
-              loading: true,
-              onOk: () => {
-                // 发布
-                releaseModel(v.id).then(res => {
-                  if (res.success) {
-                    this.$Message.success("操作成功");
-                    this.getDataList();
-                  }
-                });
-              }
-            });
-          },
+			async release(v) {
+				this.$Modal.confirm({
+					title: "确认发布",
+					content: `您确认要发布${v.modelName}-${v.modelVersion}" ?`,
+					loading: true,
+					onOk: () => {
+						// 发布
+						releaseModel(v.id).then(res => {
+							if (res.success) {
+								this.$Modal.remove();
+								this.$Message.success("操作成功");
+								this.getDataList();
+							}
+						});
+					}
+				});
+			},
 
 		},
 		mounted() {

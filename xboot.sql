@@ -2005,19 +2005,19 @@ CREATE TABLE `t_department_header`
 DROP TABLE IF EXISTS `t_task_model`;
 CREATE TABLE `t_task_model`
 (
-    `id`           varchar(255) NOT NULL,
-    `description`  varchar(1000) DEFAULT NULL,
-    `model_key`    varchar(255)  DEFAULT NULL,
-    `model_name`   varchar(255)  DEFAULT NULL,
-    `model_status` int(1)        DEFAULT 0,
-    `version`      int(10)       DEFAULT 0,
-    `release`      tinyint       DEFAULT 0,
-    `process_xml`  text,
-    `del_flag`     int(11)       DEFAULT NULL,
-    `create_by`    varchar(255)  DEFAULT NULL,
-    `create_time`  datetime      DEFAULT NULL,
-    `update_by`    varchar(255)  DEFAULT NULL,
-    `update_time`  datetime      DEFAULT NULL,
+    `id`            varchar(255) NOT NULL,
+    `description`   varchar(1000) DEFAULT NULL,
+    `model_key`     varchar(255)  DEFAULT NULL,
+    `model_name`    varchar(255)  DEFAULT NULL,
+    `model_status`  int(1)        DEFAULT 0,
+    `model_version` int(10)       DEFAULT 0,
+    `model_release` tinyint       DEFAULT 0,
+    `process_xml`   text,
+    `del_flag`      int(11)       DEFAULT NULL,
+    `create_by`     varchar(255)  DEFAULT NULL,
+    `create_time`   datetime      DEFAULT NULL,
+    `update_by`     varchar(255)  DEFAULT NULL,
+    `update_time`   datetime      DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
@@ -2029,17 +2029,17 @@ CREATE TABLE `t_task_model`
 DROP TABLE IF EXISTS `t_task_instance`;
 CREATE TABLE `t_task_instance`
 (
-    `id`           varchar(50) NOT NULL,
-    `model_id`     varchar(50)  DEFAULT NULL,
-    `name`         varchar(255) DEFAULT NULL,
-    `description`  varchar(255) DEFAULT NULL,
-    `status`       int(1)       DEFAULT 0,
+    `id`            varchar(50) NOT NULL,
+    `model_id`      varchar(50)  DEFAULT NULL,
+    `name`          varchar(255) DEFAULT NULL,
+    `description`   varchar(255) DEFAULT NULL,
+    `status`        int(1)       DEFAULT 0,
     `execute_nodes` varchar(255) DEFAULT NULL,
-    `del_flag`     int(11)      DEFAULT NULL,
-    `create_by`    varchar(255) DEFAULT NULL,
-    `create_time`  datetime     DEFAULT NULL,
-    `update_by`    varchar(255) DEFAULT NULL,
-    `update_time`  datetime     DEFAULT NULL,
+    `del_flag`      int(11)      DEFAULT NULL,
+    `create_by`     varchar(255) DEFAULT NULL,
+    `create_time`   datetime     DEFAULT NULL,
+    `update_by`     varchar(255) DEFAULT NULL,
+    `update_time`   datetime     DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
@@ -2051,21 +2051,21 @@ CREATE TABLE `t_task_instance`
 DROP TABLE IF EXISTS `t_task_process`;
 CREATE TABLE `t_task_process`
 (
-    `id`           varchar(50) NOT NULL,
-    `task_id`     varchar(50)  DEFAULT NULL,
-    `execute_node` varchar(50) DEFAULT NULL,
-    `node_semphones` varchar(255) DEFAULT NULL,
-    `pre_execute_nodes` varchar(255) DEFAULT NULL,
+    `id`                 varchar(50) NOT NULL,
+    `task_id`            varchar(50)  DEFAULT NULL,
+    `execute_node`       varchar(50)  DEFAULT NULL,
+    `node_semphones`     varchar(255) DEFAULT NULL,
+    `pre_execute_nodes`  varchar(255) DEFAULT NULL,
     `next_execute_nodes` varchar(255) DEFAULT NULL,
-    `run_result`  varchar(255) DEFAULT NULL,
-    `status`       int(1)       DEFAULT 0,
-    `exception`      tinyint       DEFAULT 0,
-    `error_message`         varchar(255) DEFAULT NULL,
-    `del_flag`     int(11)      DEFAULT NULL,
-    `create_by`    varchar(255) DEFAULT NULL,
-    `create_time`  datetime     DEFAULT NULL,
-    `update_by`    varchar(255) DEFAULT NULL,
-    `update_time`  datetime     DEFAULT NULL,
+    `run_result`         varchar(255) DEFAULT NULL,
+    `status`             int(1)       DEFAULT 0,
+    `exception`          tinyint      DEFAULT 0,
+    `error_message`      varchar(255) DEFAULT NULL,
+    `del_flag`           int(11)      DEFAULT NULL,
+    `create_by`          varchar(255) DEFAULT NULL,
+    `create_time`        datetime     DEFAULT NULL,
+    `update_by`          varchar(255) DEFAULT NULL,
+    `update_time`        datetime     DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;

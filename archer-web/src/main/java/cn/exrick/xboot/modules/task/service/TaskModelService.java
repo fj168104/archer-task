@@ -28,6 +28,6 @@ public interface TaskModelService extends XbootBaseService<TaskModel, String> {
 
 	List<TaskModel> findByModelKey(String modelKey);
 
-	List<TaskModel> findByRelease(Boolean release);
+	List<TaskModel> findByModelRelease(boolean release);
 
 }

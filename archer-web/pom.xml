@@ -263,6 +263,12 @@
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.dozermapper</groupId>
+            <artifactId>dozer-core</artifactId>
+            <version>6.2.0</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.oracle/ojdbc7 -->
         <dependency>
             <groupId>com.oracle</groupId>

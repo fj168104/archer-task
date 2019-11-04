@@ -16,6 +16,7 @@ import com.google.common.collect.Sets;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.util.CollectionUtils;
@@ -38,6 +39,9 @@ public class TaskModelController {
 	@Autowired
 	private TaskModelService taskModelService;
 
+	@Autowired
+	private Mapper beanMapper;
+
 	@RequestMapping(value = "/getByCondition", method = RequestMethod.GET)
 	@ApiOperation(value = "多条件分页获取")
 	public Result<Page<TaskModel>> getByCondition(@ModelAttribute TaskModel taskModel,
@@ -52,14 +56,14 @@ public class TaskModelController {
 	@ApiOperation(value = "获取全部已发布模型")
 	public Result<List<Map<String, Object>>> getModelKeys() {
 		List<Map<String, Object>> modelKeyList = Lists.newArrayList();
-		List<TaskModel> unReleaseModels = taskModelService.findByRelease(Boolean.FALSE);
+		List<TaskModel> unReleaseModels = taskModelService.findByModelRelease(false);
 		for (TaskModel model : unReleaseModels) {
 			Set< Object> versionSets = Sets.newHashSet();
 			List<TaskModel> taskModels = taskModelService.findByModelKey(model.getModelKey());
 			taskModels.forEach(item -> {
-				if(item.getRelease().equals(Boolean.TRUE)){
+				if(item.isModelRelease()){
 					Map<String, Object> map = Maps.newHashMap();
-					map.put("version", item.getVersion());
+					map.put("version", item.getModelVersion());
 					map.put("modelId", item.getId());
 					versionSets.add(map);
 				}
@@ -99,12 +103,13 @@ public class TaskModelController {
 	@ApiOperation(value = "模型发布")
 	public Result<Object> releaseModel(@PathVariable String id) {
 		TaskModel model = taskModelService.get(id);
-		model.setRelease(Boolean.TRUE);
+		model.setModelRelease(true);
 		taskModelService.save(model);
 		//copy model and version++
-		model.setId(null);
-		model.setVersion(model.getVersion() + 1);
-		taskModelService.save(model);
+		TaskModel newVersionModel = new TaskModel();
+		beanMapper.map(model, newVersionModel);
+		newVersionModel.setModelVersion(model.getModelVersion() + 1);
+		taskModelService.save(newVersionModel);
 		return new ResultUtil<Object>().setSuccessMsg("模型发布成功");
 	}
 

@@ -15,5 +15,5 @@ public interface TaskModelDao extends XbootBaseDao<TaskModel, String> {
 
 	List<TaskModel> findByModelKey(String modelKey);
 
-	List<TaskModel> findByRelease(Boolean release);
+	List<TaskModel> findByModelRelease(boolean release);
 }
