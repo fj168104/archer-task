@@ -33,7 +33,7 @@ import java.util.*;
  */
 @Slf4j
 @Service
-@Transactional
+//@Transactional
 public class TaskProcessServiceImpl implements TaskProcessService {
 
     @Autowired

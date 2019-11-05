@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RestController
 @Api(description = "任务流程明细管理接口")
 @RequestMapping("/xboot/taskProcess")
-@Transactional
+//@Transactional
 public class TaskProcessController {
 
     @Autowired

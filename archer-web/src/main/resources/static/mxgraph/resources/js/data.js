@@ -103,7 +103,7 @@ function createStartContent() {
 	content.appendChild(table);
 
 	content.func = function (cell) {
-		cell.data.typeDesp = content.getElementsByTagName('textarea')[0].value;
+		cell.value.typeDesp = content.getElementsByTagName('textarea')[0].value;
 	};
 	return content;
 }
@@ -118,8 +118,8 @@ function createErrorContent() {
 	content.appendChild(table);
 
 	content.func = function (cell) {
-		cell.data.typeDesp = content.getElementsByTagName('textarea')[0].value;
-		cell.data.errorClass = content.getElementsByTagName('input')[1].value;
+		cell.value.typeDesp = content.getElementsByTagName('textarea')[0].value;
+		cell.value.errorClass = content.getElementsByTagName('input')[1].value;
 	};
 	return content;
 }
@@ -134,8 +134,8 @@ function createMergeContent() {
 	content.appendChild(table);
 
 	content.func = function (cell) {
-		cell.data.typeDesp = content.getElementsByTagName('textarea')[0].value;
-		cell.data.condition = content.getElementsByTagName('input')[1].value;
+		cell.value.typeDesp = content.getElementsByTagName('textarea')[0].value;
+		cell.value.condition = content.getElementsByTagName('input')[1].value;
 	};
 	return content;
 }
@@ -150,8 +150,8 @@ function createTaskContent() {
 	content.appendChild(table);
 
 	content.func = function (cell) {
-		cell.data.typeDesp = content.getElementsByTagName('textarea')[0].value;
-		cell.data.taskClass = content.getElementsByTagName('input')[1].value;
+		cell.value.typeDesp = content.getElementsByTagName('textarea')[0].value;
+		cell.value.taskClass = content.getElementsByTagName('input')[1].value;
 	};
 	return content;
 }
@@ -166,8 +166,8 @@ function createUserContent() {
 	content.appendChild(table);
 
 	content.func = function (cell) {
-		cell.data.typeDesp = content.getElementsByTagName('textarea')[0].value;
-		cell.data.operationTag = content.getElementsByTagName('input')[1].value;
+		cell.value.typeDesp = content.getElementsByTagName('textarea')[0].value;
+		cell.value.operationTag = content.getElementsByTagName('input')[1].value;
 	};
 	return content;
 }
@@ -184,10 +184,10 @@ function createMailContent() {
 	content.appendChild(table);
 
 	content.func = function (cell) {
-		cell.data.typeDesp = content.getElementsByTagName('textarea')[0].value;
-		cell.data.To = content.getElementsByTagName('input')[1].value;
-		cell.data.Cc = content.getElementsByTagName('input')[2].value;
-		cell.data.From = content.getElementsByTagName('input')[3].value;
+		cell.value.typeDesp = content.getElementsByTagName('textarea')[0].value;
+		cell.value.To = content.getElementsByTagName('input')[1].value;
+		cell.value.Cc = content.getElementsByTagName('input')[2].value;
+		cell.value.From = content.getElementsByTagName('input')[3].value;
 	};
 	return content;
 }

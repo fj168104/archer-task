@@ -8,7 +8,7 @@ export const getModelList = (params) => {
 
 // 获取全部已发布模型
 export const getAllModelList = () => {
-    return getRequest('/taskModel/getAllList', params)
+    return getRequest('/taskModel/getAllList')
 }
 
 // 获取ModelXML
@@ -50,7 +50,7 @@ export const getInstanceList = (params) => {
 
 // 开启任务
 export const startTask = (id) => {
-    return postRequest(`/taskInstance/startTask/${id}`)
+    return postRequest(`/taskInstance/start/${id}`)
 }
 
 // 暂停任务

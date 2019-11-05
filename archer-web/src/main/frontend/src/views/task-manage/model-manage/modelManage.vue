@@ -114,7 +114,6 @@
 				modelerLoading: false,
 				modalTitle: "", // 添加或编辑标题
 				domain: "",
-
 				drop: false,
 				dropDownContent: "展开",
 				dropDownIcon: "ios-arrow-down",

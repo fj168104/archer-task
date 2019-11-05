@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -33,7 +32,7 @@ import java.util.Set;
 @RestController
 @Api(description = "任务模型管理接口")
 @RequestMapping("/xboot/taskModel")
-@Transactional
+//@Transactional
 public class TaskModelController {
 
 	@Autowired
@@ -107,7 +106,10 @@ public class TaskModelController {
 		taskModelService.save(model);
 		//copy model and version++
 		TaskModel newVersionModel = new TaskModel();
+		String newId =newVersionModel.getId();
 		beanMapper.map(model, newVersionModel);
+		newVersionModel.setId(newId);
+		newVersionModel.setModelRelease(false);
 		newVersionModel.setModelVersion(model.getModelVersion() + 1);
 		taskModelService.save(newVersionModel);
 		return new ResultUtil<Object>().setSuccessMsg("模型发布成功");

@@ -65,10 +65,11 @@
                 </FormItem>
 
                 <FormItem label="模型" prop="modelId">
-                    <i-select v-model="form.modelId" clearable style="width:100%">
+                    <i-select v-model="form.modelId" clearable style="width:80%">
                         <Option v-for="item in modelList" :value="item.value" :key="item.value">{{ item.label }}
                         </Option>
                     </i-select>
+                    <Button @click="showModel" style="width:20%">模型查看</Button>
                 </FormItem>
                 <FormItem label="描述" prop="description">
                     <Input type="textarea" :rows="4" v-model="form.description" style="width:100%"/>
@@ -79,6 +80,34 @@
                 <Button type="primary" :loading="submitLoading" @click="handleSubmit">提交</Button>
             </div>
         </Modal>
+
+        <Modal :closable="false"
+               @on-cancel="handleClose"
+               v-model="graphVisible"
+               :mask-closable="true"
+               footer-hide
+               :fullscreen="true">
+            <div slot="header">
+                <div class="ivu-modal-header-inner">任务模型</div>
+                <a @click="handleClose" class="ivu-modal-close">
+                    <Icon type="ios-close" size="31" class="ivu-icon-ios-close"/>
+                </a>
+            </div>
+
+            <div style="position:relative;height: 100%;">
+                <iframe
+                        id="iframe"
+                        :src="modelerUrl"
+                        frameborder="0"
+                        width="100%"
+                        height="100%"
+                        scrolling="auto"
+                ></iframe>
+                <Spin fix size="large" v-if="modelerLoading"></Spin>
+            </div>
+
+        </Modal>
+
     </div>
 </template>
 
@@ -93,6 +122,7 @@
 		updateInstance,
 		deleteInstanceByIds
 	} from "@/api/task";
+	import {getOtherSet} from "@/api/index";
 
 	export default {
 		name: "task-process",
@@ -102,6 +132,9 @@
 				loading: true, // 表单加载状态
 				modalType: 0, // 添加或编辑标识
 				modalVisible: false, // 添加或编辑显示
+				graphVisible: false,
+				modelerLoading: false,
+				domain: "",
 				modalTitle: "", // 添加或编辑标题
 				drop: false,
 				dropDownContent: "展开",
@@ -134,11 +167,6 @@
 						align: "center"
 					},
 					{
-						type: "index",
-						width: 60,
-						align: "center"
-					},
-					{
 						title: "任务编号",
 						key: "id",
 						minWidth: 120,
@@ -154,9 +182,64 @@
 					{
 						title: "状态",
 						key: "status",
-						sortable: true,
-						sortType: "desc",
-						width: 150
+						width: 150,
+						render: (h, params) => {
+							if (params.row.status === 0) {
+								return h("div", [
+									h("Tag", {
+										props: {
+											color: "blue"
+										},
+									}, "未开启")
+								]);
+							} else if (params.row.status === 1) {
+								return h("div", [
+									h("Badge", {
+										props: {
+											color: "green"
+										},
+									}, "已运行")
+								]);
+							} else if (params.row.status === 2) {
+								return h("div", [
+									h("Badge", {
+										props: {
+											color: "yellow"
+										},
+									}, "暂停中")
+								]);
+							} else if (params.row.status === 3) {
+								return h("div", [
+									h("Badge", {
+										props: {
+											color: "gray"
+										},
+									}, "已结束")
+								]);
+							}
+						},
+						filters: [
+							{
+								label: "未开启",
+								value: 0
+							},
+							{
+								label: "运行中",
+								value: 1
+							},
+							{
+								label: "暂停中",
+								value: 2
+							},
+							{
+								label: "已结束",
+								value: 3
+							}
+						],
+						filterMultiple: false,
+						filterMethod(value, row) {
+							return row.status === value;
+						}
 					},
 
 					{
@@ -171,7 +254,7 @@
 						title: "操作",
 						key: "action",
 						align: "center",
-						width: 200,
+						minWidth: 200,
 						render: (h, params) => {
 							return h("div", [
 								h(
@@ -299,6 +382,7 @@
 		},
 		methods: {
 			init() {
+				this.getDomain();
 				this.initModelList();
 				this.getDataList();
 			},
@@ -307,10 +391,12 @@
 				getAllModelList().then(res => {
 					let models = res.result;
 					models.forEach(item => {
-						let modelTemp = {};
-						modelTemp.value = item.versionAndId.id;
-						modelTemp.label = `${item.modelKey}-${item.modelName}-v${item.versionAndId.version}`;
-						this.modelList.push(modelTemp);
+						item.versionAndId.forEach(version => {
+							let modelTemp = {};
+							modelTemp.value = version.modelId;
+							modelTemp.label = `${item.modelKey}-${item.modelName}-v${version.version}`;
+							this.modelList.push(modelTemp);
+						})
 					})
 				});
 			},
@@ -360,6 +446,15 @@
 				}
 				this.drop = !this.drop;
 			},
+
+			getDomain() {
+				getOtherSet().then(res => {
+					if (res.result) {
+						this.domain = res.result.domain;
+					}
+				});
+			},
+
 			getDataList() {
 				this.loading = true;
 				// 带多条件搜索参数获取表单数据 请自行修改接口
@@ -435,6 +530,7 @@
 						// 删除
 						deleteInstanceByIds(v.id).then(res => {
 							if (res.success) {
+								this.$Modal.remove();
 								this.$Message.success("操作成功");
 								this.getDataList();
 							}
@@ -461,6 +557,7 @@
 						deleteInstanceByIds(ids).then(res => {
 							this.$Modal.remove();
 							if (res.success) {
+								this.$Modal.remove();
 								this.$Message.success("操作成功");
 								this.clearSelectAll();
 								this.getDataList();
@@ -480,6 +577,7 @@
 						// 删除
 						startTask(v.id).then(res => {
 							if (res.success) {
+								this.$Modal.remove();
 								this.$Message.success("开启成功");
 								v.status = 1;
 								// this.getDataList();
@@ -499,6 +597,7 @@
 						// 删除
 						suspend(v.id).then(res => {
 							if (res.success) {
+								this.$Modal.remove();
 								this.$Message.success("暂停成功");
 								v.status = 2;
 								// this.getDataList();
@@ -519,7 +618,50 @@
 				});
 			},
 
+			handleClose() {
+				this.graphVisible = false;
+			},
+
+			showModel() {
+				this.modalType = 2;
+				this.modalTitle = "任务设计";
+
+				if (!this.domain) {
+					this.$Modal.confirm({
+						title: "您还未配置访问域名",
+						content: "您还未配置应用部署访问域名，是否现在立即去配置?",
+						onOk: () => {
+							this.$router.push({
+								name: "setting",
+								query: {name: "other"}
+							});
+						}
+					});
+					return;
+				}
+				this.modelerUrl = `${this.domain}/myports.html?modelId=${
+					this.form.modelId
+				}&accessToken=${this.getStore("accessToken")}&time=${new Date()}`;
+				// this.showModeler = true;
+				this.graphVisible = true;
+				this.modelerLoading = false;
+				let that = this;
+				// 判断iframe是否加载完毕
+				let iframe = document.getElementById("iframe");
+				if (iframe.attachEvent) {
+					iframe.attachEvent("onload", function () {
+						//iframe加载完成后你需要进行的操作
+						that.modelerLoading = false;
+					});
+				} else {
+					iframe.onload = function () {
+						//iframe加载完成后你需要进行的操作
+						that.modelerLoading = false;
+					};
+				}
+			}
 		},
+
 		mounted() {
 			this.init();
 		}

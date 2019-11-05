@@ -2,6 +2,7 @@ package cn.exrick.xboot.modules.task.controller;
 
 import cn.exrick.xboot.base.XbootBaseController;
 import cn.exrick.xboot.common.constant.TaskConstant;
+import cn.exrick.xboot.common.exception.XbootException;
 import cn.exrick.xboot.common.utils.PageUtil;
 import cn.exrick.xboot.common.utils.ResultUtil;
 import cn.exrick.xboot.common.vo.PageVo;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
 @RestController
 @Api(description = "任务实例管理接口")
 @RequestMapping("/xboot/taskInstance")
-@Transactional
+//@Transactional
 public class TaskInstanceController {
 
 	@Autowired
@@ -90,7 +91,7 @@ public class TaskInstanceController {
 		return ResultUtil.data(taskInstance.getId());
 	}
 
-	@RequestMapping(value = "/update", method = RequestMethod.PUT)
+	@PostMapping("/update")
 	@ApiOperation(value = "更新数据")
 	public Result<Object> update(@ModelAttribute TaskInstance entity) {
 		if (StrUtil.isBlank(entity.getModelId()) || StrUtil.isBlank(entity.getName())) {

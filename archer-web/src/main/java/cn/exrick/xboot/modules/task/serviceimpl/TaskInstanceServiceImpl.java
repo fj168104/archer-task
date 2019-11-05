@@ -45,7 +45,7 @@ import java.lang.reflect.Field;
  */
 @Slf4j
 @Service
-@Transactional
+//@Transactional
 public class TaskInstanceServiceImpl implements TaskInstanceService {
 
 	@Autowired
@@ -153,7 +153,7 @@ public class TaskInstanceServiceImpl implements TaskInstanceService {
 			Element element = entry.getValue().getChild("Object");
 			String type = element.getAttributeValue("type");
 			if (type.equalsIgnoreCase("START")) {
-				startNodeId = element.getAttributeValue("id");
+				startNodeId = entry.getKey();
 				instance.setStatus(TaskConstant.TASK_STATUS_RUNNING);
 				break;
 			}
@@ -170,6 +170,9 @@ public class TaskInstanceServiceImpl implements TaskInstanceService {
 	@Override
 	public void suspend(String instanceId) {
 		TaskInstance instance = get(instanceId);
+		if (instance.getStatus().equals(TaskConstant.TASK_STATUS_FINISHED)) {
+			throw new XbootException("流程已经结束: instanceId=" + instance.getId());
+		}
 		instance.setStatus(TaskConstant.TASK_STATUS_PENDING);
 		save(instance);
 	}
@@ -256,7 +259,8 @@ public class TaskInstanceServiceImpl implements TaskInstanceService {
 			for (Element element : edgeSet) {
 				if (element.getAttributeValue("source").equals(taskProcess.getExecuteNode())) {
 					//分支节点的处理
-					if (element.getAttributeValue("type").equals("MERGE") &&
+					Element sourceEle = vertexMap.get(taskProcess.getExecuteNode()).getChild("Object");
+					if (sourceEle.getAttributeValue("type").equals("MERGE") &&
 							!element.getAttributeValue("value").equals(taskProcess.getRunResult()))
 						continue;
 					String nextNodeId = element.getAttributeValue("target");

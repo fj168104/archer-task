@@ -27,7 +27,7 @@ import java.lang.reflect.Field;
  */
 @Slf4j
 @Service
-@Transactional
+//@Transactional
 public class TaskModelServiceImpl implements TaskModelService {
 
     @Autowired
@@ -48,6 +48,7 @@ public class TaskModelServiceImpl implements TaskModelService {
 
                 // TODO 可添加你的其他搜索过滤条件 默认已有创建时间过滤
                 Path<Date> createTimeField=root.get("createTime");
+                Path<Boolean> modelReleaseField=root.get("modelRelease");
 
                 List<Predicate> list = new ArrayList<Predicate>();
 
@@ -57,7 +58,7 @@ public class TaskModelServiceImpl implements TaskModelService {
                     Date end = DateUtil.parse(searchVo.getEndDate());
                     list.add(cb.between(createTimeField, start, DateUtil.endOfDay(end)));
                 }
-
+                list.add(cb.equal(modelReleaseField, false));
                 Predicate[] arr = new Predicate[list.size()];
                 cq.where(list.toArray(arr));
                 return null;
