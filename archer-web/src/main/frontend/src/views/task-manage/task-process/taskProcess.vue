@@ -68,6 +68,11 @@
         type: String,
         default: ''
       },
+
+      columeData: {
+        type: Array,
+        default: []
+      }
     },
 
     data() {
@@ -193,8 +198,6 @@
     },
     methods: {
       init() {
-        this.searchForm.taskId = this.taskId;
-        alert(this.searchForm.taskId)
         this.getDataList();
       },
       changePage(v) {
@@ -244,6 +247,7 @@
         this.drop = !this.drop;
       },
       getDataList() {
+        this.searchForm.taskId = this.taskId;
         this.loading = true;
         // 带多条件搜索参数获取表单数据 请自行修改接口
         getProcessList(this.searchForm).then(res => {

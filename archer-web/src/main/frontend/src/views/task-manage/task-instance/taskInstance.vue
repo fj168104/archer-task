@@ -109,10 +109,7 @@
         </Modal>
 
 <!--                process list-->
-        <Modal :mask-closable="true"
-               v-model="processVisible"
-               footer-hide
-               :fullscreen="true">
+        <Modal :title="modalTitle" v-model="processVisible" :mask-closable='false' :fullscreen="true">
             <div style="position:relative;height: 100%;">
                 <task-process :task-id="form.id"></task-process>
             </div>
@@ -632,6 +629,7 @@
 			},
 
 			queryProcess(v) {
+				this.modalTitle = '执行历史';
 				this.form.id = v.id;
 				this.processVisible = true;
 			},
