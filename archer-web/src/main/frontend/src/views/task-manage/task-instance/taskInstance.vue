@@ -108,6 +108,17 @@
 
         </Modal>
 
+<!--                process list-->
+        <Modal :mask-closable="true"
+               v-model="processVisible"
+               footer-hide
+               :fullscreen="true">
+            <div style="position:relative;height: 100%;">
+                <task-process :task-id="form.id"></task-process>
+            </div>
+
+        </Modal>
+
     </div>
 </template>
 
@@ -123,16 +134,18 @@
 		deleteInstanceByIds
 	} from "@/api/task";
 	import {getOtherSet} from "@/api/index";
+	import taskProcess from "../task-process/taskProcess";
 
 	export default {
-		name: "task-process",
-		components: {},
+		name: "task-instance",
+		components: {taskProcess},
 		data() {
 			return {
 				loading: true, // 表单加载状态
 				modalType: 0, // 添加或编辑标识
 				modalVisible: false, // 添加或编辑显示
 				graphVisible: false,
+				processVisible: false,
 				modelerLoading: false,
 				domain: "",
 				modalTitle: "", // 添加或编辑标题
@@ -349,7 +362,7 @@
 										},
 										on: {
 											click: () => {
-												this.queryPhase(params.row);
+												this.queryProcess(params.row);
 											}
 										}
 									},
@@ -616,6 +629,11 @@
 						this.processList = res.result;
 					}
 				});
+			},
+
+			queryProcess(v) {
+				this.form.id = v.id;
+				this.processVisible = true;
 			},
 
 			handleClose() {
