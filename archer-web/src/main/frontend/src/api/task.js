@@ -89,3 +89,8 @@ export const getProcessList = (params) => {
 export const updateProcess = (params) => {
     return postRequest('/taskProcess/update', params)
 }
+
+//获取TaskUnit
+export const getTaskUnit = (taskId, nodeId) => {
+	return getRequest(`/taskProcess/getTaskUnit/${taskId}/${nodeId}`)
+}

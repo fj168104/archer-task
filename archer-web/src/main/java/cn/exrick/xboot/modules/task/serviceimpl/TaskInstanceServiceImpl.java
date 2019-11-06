@@ -95,13 +95,6 @@ public class TaskInstanceServiceImpl implements TaskInstanceService {
 
 		TaskInstance instance = get(instanceId);
 		metedata.setInstance(instance);
-		if (instance.getStatus().equals(TaskConstant.TASK_STATUS_FINISHED)) {
-			throw new XbootException("流程已经结束: instanceId=" + instance.getId());
-		}
-
-		if (instance.getStatus().equals(TaskConstant.TASK_STATUS_RUNNING)) {
-			throw new XbootException("流程还在运行中，不能启动: instanceId=" + instance.getId());
-		}
 
 		Document doc = getDocument(instance.getModelId());
 		//取的根元素

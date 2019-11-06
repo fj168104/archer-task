@@ -6,7 +6,11 @@ import cn.exrick.xboot.common.utils.ResultUtil;
 import cn.exrick.xboot.common.vo.PageVo;
 import cn.exrick.xboot.common.vo.Result;
 import cn.exrick.xboot.common.vo.SearchVo;
+import cn.exrick.xboot.modules.task.engine.db.DBTaskUnit;
+import cn.exrick.xboot.modules.task.entity.TaskFlowMetedata;
+import cn.exrick.xboot.modules.task.entity.TaskInstance;
 import cn.exrick.xboot.modules.task.entity.TaskProcess;
+import cn.exrick.xboot.modules.task.service.TaskInstanceService;
 import cn.exrick.xboot.modules.task.service.TaskProcessService;
 import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
@@ -30,6 +34,9 @@ public class TaskProcessController {
     @Autowired
     private TaskProcessService taskProcessService;
 
+    @Autowired
+    private TaskInstanceService taskInstanceService;
+
     @RequestMapping(value = "/getByCondition", method = RequestMethod.GET)
     @ApiOperation(value = "多条件分页获取")
     public Result<Page<TaskProcess>> getByCondition(@ModelAttribute TaskProcess taskProcess,
@@ -49,5 +56,15 @@ public class TaskProcessController {
         taskProcessService.update(entity);
         return ResultUtil.success("更新成功");
     }
+
+    @GetMapping("/getTaskUnit/{taskId}/{nodeId}")
+    @ApiOperation(value = "获取任务单元")
+    public Result<Object> getTaskUnit(@PathVariable String taskId, @PathVariable String nodeId) {
+
+        TaskFlowMetedata flowMetedata = taskInstanceService.loadTask(taskId);
+        DBTaskUnit unit = taskProcessService.getUnit(nodeId, flowMetedata.getVertexMap().get(nodeId).getChild("Object"));
+        return ResultUtil.data(unit);
+    }
+
 
 }

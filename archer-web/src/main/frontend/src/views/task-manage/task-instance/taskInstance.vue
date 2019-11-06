@@ -111,7 +111,7 @@
 <!--                process list-->
         <Modal :title="modalTitle" v-model="processVisible" :mask-closable='false' :fullscreen="true">
             <div style="position:relative;height: 100%;">
-                <task-process :task-id="form.id"></task-process>
+                <task-process :task-id="form.id" :data="processData" :total="processTotal"></task-process>
             </div>
 
         </Modal>
@@ -128,8 +128,10 @@
 		queryPhase,
 		addInstance,
 		updateInstance,
-		deleteInstanceByIds
+		deleteInstanceByIds,
+		getProcessList
 	} from "@/api/task";
+
 	import {getOtherSet} from "@/api/index";
 	import taskProcess from "../task-process/taskProcess";
 
@@ -387,7 +389,11 @@
 					}
 				],
 				data: [], // 表单数据
-				total: 0 // 表单数据总数
+				total: 0, // 表单数据总数
+
+                //process
+                processData: [],
+                processTotal: 0,
 			};
 		},
 		methods: {
@@ -631,7 +637,23 @@
 			queryProcess(v) {
 				this.modalTitle = '执行历史';
 				this.form.id = v.id;
-				this.processVisible = true;
+				let sForm = {
+					pageNumber: 1,
+                    pageSize: 10,
+                    taskId: v.id,
+                    sort: "createTime",
+                    order: "asc",
+				};
+				this.loading = true;
+				getProcessList(sForm).then(res => {
+					this.loading = false;
+					if (res.success) {
+						this.processData = res.result.content;
+						this.processTotal = res.result.totalElements;
+						this.processVisible = true;
+					}
+				});
+
 			},
 
 			handleClose() {
