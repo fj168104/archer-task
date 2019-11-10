@@ -211,6 +211,7 @@ ignored:
     - /**/*.jpg
     - /**/*.jpeg
     - /**/*.ico
+    - /**/*.xml
     - /xboot/test/**
 
 # Actuator
