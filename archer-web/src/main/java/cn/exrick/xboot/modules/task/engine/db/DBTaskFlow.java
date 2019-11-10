@@ -131,7 +131,7 @@ public class DBTaskFlow extends TaskFlowAdapter {
                 vertexMap.get(nodeId).getChild("Object"));
         /**判断信号量是否收集完成**/
         //信号量未收集完成，pending该节点
-        if (!taskProcess.getNodeSemphoneSet().equals(taskProcess.getPreExecuteNodesSet())) {
+        if (!taskProcess.getNodeSemphoneSet().equals(taskProcess.getPreExecuteNodeSet())) {
             return;
         }
 
@@ -163,7 +163,7 @@ public class DBTaskFlow extends TaskFlowAdapter {
                     nextProcess.getNodeSemphoneSet().add(nodeId);
                     for (Element elementPre : edgeSet) {
                         if (elementPre.getAttributeValue("target").equals(nextNodeId)) {
-                            nextProcess.getPreExecuteNodesSet().add(elementPre.getAttributeValue("source"));
+                            nextProcess.getPreExecuteNodeSet().add(elementPre.getAttributeValue("source"));
                         }
                     }
                     processService.save(nextProcess);

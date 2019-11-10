@@ -201,7 +201,7 @@ public class TaskInstanceServiceImpl implements TaskInstanceService {
 	 */
 	@Override
 	public TaskInstance save(TaskInstance taskInstance) {
-		taskInstance.setExecuteNodes(String.join("','", taskInstance.getExecuteNodeSet()));
+		taskInstance.setExecuteNodes(String.join(",", taskInstance.getExecuteNodeSet()));
 		return getRepository().save(taskInstance);
 	}
 
@@ -230,7 +230,7 @@ public class TaskInstanceServiceImpl implements TaskInstanceService {
 				vertexMap.get(nodeId).getChild("Object"));
 		/**判断信号量是否收集完成**/
 		//信号量未收集完成，pending该节点
-		if (!taskProcess.getNodeSemphoneSet().equals(taskProcess.getPreExecuteNodesSet())) {
+		if (!taskProcess.getNodeSemphoneSet().equals(taskProcess.getPreExecuteNodeSet())) {
 			return;
 		}
 
@@ -257,15 +257,18 @@ public class TaskInstanceServiceImpl implements TaskInstanceService {
 							!element.getAttributeValue("value").equals(taskProcess.getRunResult()))
 						continue;
 					String nextNodeId = element.getAttributeValue("target");
-					TaskProcess nextProcess = new TaskProcess();
-					nextProcess.setTaskId(instance.getId());
-					nextProcess.setExecuteNode(nextNodeId);
-					nextProcess.getNodeSemphoneSet().add(nodeId);
-					for (Element elementPre : edgeSet) {
-						if (elementPre.getAttributeValue("target").equals(nextNodeId)) {
-							nextProcess.getPreExecuteNodesSet().add(elementPre.getAttributeValue("source"));
+					TaskProcess nextProcess = processService.findByTaskIdAndExecuteNode(instance.getId(), nextNodeId);
+					if (nextProcess == null) {
+						nextProcess = new TaskProcess();
+						nextProcess.setTaskId(instance.getId());
+						nextProcess.setExecuteNode(nextNodeId);
+						for (Element elementPre : edgeSet) {
+							if (elementPre.getAttributeValue("target").equals(nextNodeId)) {
+								nextProcess.getPreExecuteNodeSet().add(elementPre.getAttributeValue("source"));
+							}
 						}
 					}
+					nextProcess.getNodeSemphoneSet().add(nodeId);
 					processService.save(nextProcess);
 					//添加到任务实例中执行的节点集合
 					instance.getExecuteNodeSet().add(nextNodeId);

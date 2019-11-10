@@ -206,7 +206,7 @@
 								]);
 							} else if (params.row.status === 1) {
 								return h("div", [
-									h("Badge", {
+									h("Tag", {
 										props: {
 											color: "green"
 										},
@@ -214,7 +214,7 @@
 								]);
 							} else if (params.row.status === 2) {
 								return h("div", [
-									h("Badge", {
+									h("Tag", {
 										props: {
 											color: "yellow"
 										},
@@ -222,7 +222,7 @@
 								]);
 							} else if (params.row.status === 3) {
 								return h("div", [
-									h("Badge", {
+									h("Tag", {
 										props: {
 											color: "gray"
 										},
@@ -266,7 +266,7 @@
 						title: "操作",
 						key: "action",
 						align: "center",
-						minWidth: 200,
+						minWidth: 240,
 						render: (h, params) => {
 							return h("div", [
 								h(
@@ -326,26 +326,6 @@
 										}
 									},
 									"暂停任务"
-								),
-
-								h(
-									"Button",
-									{
-										props: {
-											type: "primary",
-											size: "small",
-											icon: "ios-create-outline"
-										},
-										style: {
-											marginRight: "5px"
-										},
-										on: {
-											click: () => {
-												this.queryPhase(params.row);
-											}
-										}
-									},
-									"运行查询"
 								),
 
 								h(

@@ -7,17 +7,19 @@ import java.util.List;
 
 /**
  * 任务流程明细数据处理层
+ *
  * @author Exrick
  */
-public interface TaskProcessDao extends XbootBaseDao<TaskProcess,String> {
+public interface TaskProcessDao extends XbootBaseDao<TaskProcess, String> {
 	/**
 	 * 通过taskId 和 搜索
+	 *
 	 * @param taskId
 	 * @param executeNode
 	 * @return
 	 */
 	TaskProcess findByTaskIdAndExecuteNode(String taskId, String executeNode);
 
+	List<TaskProcess> findByTaskId(String taskId);
 
-	List<TaskProcess> findByTaskIdEqualsAndStatusEquals(String taskId, String status);
 }

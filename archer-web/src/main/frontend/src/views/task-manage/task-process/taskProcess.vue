@@ -20,37 +20,51 @@
             </Card>
             </Col>
         </Row>
-        <Modal :title="modalTitle" v-model="modalVisible" :mask-closable='false' :width="500">
-            <Form ref="form" :model="form" :label-width="120">
+        <Modal :title="modalTitle" v-model="modalVisible" :mask-closable='false' :width="800">
+            <Form ref="form" :model="form" :label-width="150" inline>
                 <FormItem label="任务执行节点" prop="executeNode">
                     <Input v-model="form.executeNode" style="width:100%" readonly/>
+                </FormItem>
+                <FormItem label="任务执行节点名称" prop="executeNode">
+                    <Input v-model="form.executeNodeName" style="width:100%" readonly/>
                 </FormItem>
 
                 <FormItem label="收集的信号量" prop="nodeSemphones">
                     <Input v-model="form.nodeSemphones" style="width:100%" readonly/>
                 </FormItem>
+                <FormItem label="收集的信号量名称" prop="nodeSemphones">
+                    <Input v-model="form.nodeSemphoneNameSet" style="width:100%" readonly/>
+                </FormItem>
 
                 <FormItem label="上一任务执行节点" prop="preExecuteNodes">
                     <Input v-model="form.preExecuteNodes" style="width:100%" readonly/>
+                </FormItem>
+                <FormItem label="上一任务执行节点名称" prop="preExecuteNodes">
+                    <Input v-model="form.preExecuteNodeNameSet" style="width:100%" readonly/>
                 </FormItem>
 
                 <FormItem label="下一任务执行节点" prop="nextExecuteNodes">
                     <Input v-model="form.nextExecuteNodes" style="width:100%" readonly/>
                 </FormItem>
+                <FormItem label="下一任务执行节点名称" prop="nextExecuteNodes">
+                    <Input v-model="form.nextExecuteNodeNameSet" style="width:100%" readonly/>
+                </FormItem>
+
                 <FormItem label="运行结果" prop="runResult">
                     <Input v-model="form.runResult" style="width:100%" readonly/>
                 </FormItem>
 
-                <FormItem label="流程状态" prop="status">
-                    <Input v-model="form.status" style="width:100%" readonly/>
+                <FormItem label="流程状态" prop="statusDesp">
+                    <Input v-model="form.statusDesp" style="width:100%" readonly/>
                 </FormItem>
 
-                <FormItem label="执行异常" prop="exception">
-                    <Input v-model="form.exception" style="width:100%" readonly/>
+                <FormItem label="执行异常" prop="exceptionDesp">
+                    <Input v-model="form.exceptionDesp" style="width:100%" readonly/>
                 </FormItem>
                 <FormItem label="异常描述" prop="errorMessage">
                     <Input v-model="form.errorMessage" style="width:100%" readonly/>
                 </FormItem>
+
             </Form>
             <
         </Modal>
@@ -101,13 +115,19 @@
 				form: { // 添加或编辑表单对象初始化数据
 					taskId: "",
 					executeNode: "",
+					executeNodeName: "",
 					nodeSemphones: "",
+					nodeSemphoneNameSet:[],
 					preExecuteNodes: "",
+					preExecuteNodeNameSet:[],
 					nextExecuteNodes: "",
+					nextExecuteNodeNameSet:[],
 					runResult: "",
-					status: "",
+					status: 0,
+					statusDesp:"",
 					finished: "",
-					exception: "",
+					exception: false,
+					exceptionDesp:"",
 					errorMessage: "",
 				},
 
@@ -156,12 +176,60 @@
 						key: "status",
 						minWidth: 120,
 						sortable: false,
+						render: (h, params) => {
+							if (params.row.status === 0) {
+								return h("div", [
+									h("Tag", {
+										props: {
+											color: "yellow"
+										},
+									}, "停止中")
+								]);
+							} else if (params.row.status === 1) {
+								return h("div", [
+									h("Tag", {
+										props: {
+											color: "green"
+										},
+									}, "已运行")
+								]);
+							} else if (params.row.status === 2) {
+								return h("div", [
+									h("Tag", {
+										props: {
+											color: "blue"
+										},
+									}, "已结束")
+								]);
+							}
+						},
 					},
 					{
 						title: "执行异常",
 						key: "exception",
 						minWidth: 120,
 						sortable: false,
+						render: (h, params) => {
+							if (params.row.exception) {
+								return h("div", [
+									h("Badge", {
+										props: {
+											status: "error",
+											text: "失败"
+										}
+									})
+								]);
+							} else {
+								return h("div", [
+									h("Badge", {
+										props: {
+											status: "success",
+											text: "成功"
+										}
+									})
+								]);
+							}
+						},
 					},
 					{
 						title: "异常描述",
@@ -279,9 +347,21 @@
 				let str = JSON.stringify(v);
 				let data = JSON.parse(str);
 				this.form = data;
-				getTaskUnit(this.form.taskId, this.form.executeNode).then(()=>{
-					this.modalVisible = true;
-                });
+				if(this.form.status === 0){
+					this.form.statusDesp = '停止中';
+                }else if(this.form.status === 1){
+					this.form.statusDesp = '已运行';
+                }else {
+					this.form.statusDesp = '已结束';
+                }
+
+				if(this.form.exception){
+					this.form.exceptionDesp = '失败';
+				}else {
+					this.form.exceptionDesp = '成功';
+                }
+
+				this.modalVisible = true;
 
 			}
 		},

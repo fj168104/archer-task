@@ -83,9 +83,9 @@ public class TaskProcessServiceImpl implements TaskProcessService {
      */
     @Override
     public TaskProcess save(TaskProcess taskProcess) {
-        taskProcess.setNodeSemphones(String.join("','", taskProcess.getNodeSemphoneSet()));
-        taskProcess.setPreExecuteNodes(String.join("','", taskProcess.getPreExecuteNodesSet()));
-        taskProcess.setNextExecuteNodes(String.join("','", taskProcess.getNextExecuteNodeSet()));
+        taskProcess.setNodeSemphones(String.join(",", taskProcess.getNodeSemphoneSet()));
+        taskProcess.setPreExecuteNodes(String.join(",", taskProcess.getPreExecuteNodeSet()));
+        taskProcess.setNextExecuteNodes(String.join(",", taskProcess.getNextExecuteNodeSet()));
         taskProcess = getRepository().save(taskProcess);
         setNodeSemphoneSet(taskProcess);
         setPreExecuteNodeSet(taskProcess);
@@ -96,20 +96,30 @@ public class TaskProcessServiceImpl implements TaskProcessService {
     @Override
     public TaskProcess findByTaskIdAndExecuteNode(String taskId, String executeNode) {
         TaskProcess taskProcess = taskProcessDao.findByTaskIdAndExecuteNode(taskId, executeNode);
-        setNodeSemphoneSet(taskProcess);
-        setPreExecuteNodeSet(taskProcess);
-        setNextExecuteNodeSet(taskProcess);
+        if(taskProcess != null){
+			setNodeSemphoneSet(taskProcess);
+			setPreExecuteNodeSet(taskProcess);
+			setNextExecuteNodeSet(taskProcess);
+		}
         return taskProcess;
     }
 
     @Override
     public TaskProcess findByTaskIdAndExecuteNode(String taskId, String executeNode, Element vertexElement) {
         TaskProcess taskProcess = findByTaskIdAndExecuteNode(taskId, executeNode);
-        taskProcess.setTaskUnit(getUnit(executeNode, vertexElement));
+		if(taskProcess != null){
+			taskProcess.setTaskUnit(getUnit(executeNode, vertexElement));
+		}
         return taskProcess;
     }
 
-    private void setNodeSemphoneSet(TaskProcess taskProcess) {
+	@Override
+	public List<TaskProcess> findByTaskId(String taskId) {
+		return taskProcessDao.findByTaskId(taskId);
+	}
+
+	@Override
+    public void setNodeSemphoneSet(TaskProcess taskProcess) {
         if (StringUtils.isNotEmpty(taskProcess.getNodeSemphones())) {
             String nodeSemphones[] = taskProcess.getNodeSemphones().trim().split(",");
             taskProcess.setNodeSemphoneSet(new HashSet<>(Arrays.asList(nodeSemphones)));
@@ -118,16 +128,18 @@ public class TaskProcessServiceImpl implements TaskProcessService {
         }
     }
 
-    private void setPreExecuteNodeSet(TaskProcess taskProcess) {
+    @Override
+    public void setPreExecuteNodeSet(TaskProcess taskProcess) {
         if (StringUtils.isNotEmpty(taskProcess.getPreExecuteNodes())) {
-            String preExecuteNodes[] = taskProcess.getPreExecuteNodes().trim().split(",");
-            taskProcess.setPreExecuteNodesSet(new HashSet<>(Arrays.asList(preExecuteNodes)));
+            String[] preExecuteNodes = taskProcess.getPreExecuteNodes().trim().split(",");
+            taskProcess.setPreExecuteNodeSet(new HashSet<>(Arrays.asList(preExecuteNodes)));
         } else {
-            taskProcess.setPreExecuteNodesSet(Sets.newHashSet());
+            taskProcess.setPreExecuteNodeSet(Sets.newHashSet());
         }
     }
 
-    private void setNextExecuteNodeSet(TaskProcess taskProcess) {
+    @Override
+    public void setNextExecuteNodeSet(TaskProcess taskProcess) {
         if (StringUtils.isNotEmpty(taskProcess.getNextExecuteNodes())) {
             String nextExecuteNodes[] = taskProcess.getNextExecuteNodes().trim().split(",");
             taskProcess.setNextExecuteNodeSet(new HashSet<>(Arrays.asList(nextExecuteNodes)));

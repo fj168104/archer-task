@@ -45,7 +45,7 @@ public class TaskProcess extends XbootBaseEntity {
     @Transient
     @TableField(exist = false)
     @ApiModelProperty(value = "上一任务执行节点Set")
-    private Set<String> preExecuteNodesSet = Sets.newHashSet();
+    private Set<String> preExecuteNodeSet = Sets.newHashSet();
 
     @ApiModelProperty(value = "上一任务执行节点")
     private String preExecuteNodes;
@@ -69,6 +69,26 @@ public class TaskProcess extends XbootBaseEntity {
 
     @ApiModelProperty(value = "异常描述")
     private String errorMessage;
+
+    @Transient
+    @TableField(exist = false)
+    @ApiModelProperty(value = "任务执行节点名称")
+    private String executeNodeName;
+    
+    @Transient
+    @TableField(exist = false)
+    @ApiModelProperty(value = "收集的信号量名称Set")
+    private Set<String> nodeSemphoneNameSet = Sets.newHashSet();
+
+    @Transient
+    @TableField(exist = false)
+    @ApiModelProperty(value = "上一任务执行节点名称Set")
+    private Set<String> preExecuteNodeNameSet = Sets.newHashSet();
+
+    @Transient
+    @TableField(exist = false)
+    @ApiModelProperty(value = "下一任务执行节点名称Set")
+    private Set<String> nextExecuteNodeNameSet = Sets.newHashSet();
 
     @Transient
     @TableField(exist = false)

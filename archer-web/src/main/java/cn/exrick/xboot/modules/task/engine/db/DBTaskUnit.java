@@ -2,11 +2,13 @@ package cn.exrick.xboot.modules.task.engine.db;
 
 
 import cn.exrick.xboot.modules.task.engine.TaskUnit;
+import lombok.Data;
 
 /**
  * Created by feng on 2019/9/5 0005
  * 基于数据库的任务单元
  */
+@Data
 public abstract class DBTaskUnit implements TaskUnit {
 
 	protected String unitId;
@@ -30,6 +32,10 @@ public abstract class DBTaskUnit implements TaskUnit {
 	@Override
 	public String getUnitId() {
 		return unitId;
+	}
+
+	public String getNodeName(){
+		return isControllNode? typeName:typeDesp;
 	}
 
 }

@@ -21,6 +21,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.stream.Collectors;
+
 /**
  * @author Exrick
  */
@@ -44,6 +46,33 @@ public class TaskProcessController {
                                                             @ModelAttribute PageVo pageVo){
 
         Page<TaskProcess> page = taskProcessService.findByCondition(taskProcess, searchVo, PageUtil.initPage(pageVo));
+        TaskFlowMetedata flowMetedata = taskInstanceService.loadTask(taskProcess.getTaskId());
+        page.getContent().forEach(item -> {
+            taskProcessService.setNodeSemphoneSet(item);
+            taskProcessService.setPreExecuteNodeSet(item);
+            taskProcessService.setNextExecuteNodeSet(item);
+            DBTaskUnit unit = taskProcessService.getUnit(item.getExecuteNode(),
+                    flowMetedata.getVertexMap().get(item.getExecuteNode()).getChild("Object"));
+            item.setExecuteNodeName(unit.getNodeName());
+            item.setNodeSemphoneNameSet(item.getNodeSemphoneSet().stream().map(semphone -> {
+                DBTaskUnit uSemphone = taskProcessService.getUnit(semphone,
+                        flowMetedata.getVertexMap().get(semphone).getChild("Object"));
+                return uSemphone.getNodeName();
+            }).collect(Collectors.toSet()));
+
+            item.setPreExecuteNodeNameSet(item.getPreExecuteNodeSet().stream().map(pre -> {
+                DBTaskUnit uPre = taskProcessService.getUnit(pre,
+                        flowMetedata.getVertexMap().get(pre).getChild("Object"));
+                return uPre.getNodeName();
+            }).collect(Collectors.toSet()));
+
+            item.setNextExecuteNodeNameSet(item.getNextExecuteNodeSet().stream().map(next -> {
+                DBTaskUnit uNext = taskProcessService.getUnit(next,
+                        flowMetedata.getVertexMap().get(next).getChild("Object"));
+                return uNext.getNodeName();
+            }).collect(Collectors.toSet()));
+
+        });
         return new ResultUtil<Page<TaskProcess>>().setData(page);
     }
 

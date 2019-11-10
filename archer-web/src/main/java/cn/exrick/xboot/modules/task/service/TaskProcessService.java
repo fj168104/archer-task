@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import cn.exrick.xboot.common.vo.SearchVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,6 +27,14 @@ public interface TaskProcessService extends XbootBaseService<TaskProcess,String>
     Page<TaskProcess> findByCondition(TaskProcess taskProcess, SearchVo searchVo, Pageable pageable);
 
     TaskProcess findByTaskIdAndExecuteNode(String taskId, String executeNode, Element vertexElement);
+
+    List<TaskProcess> findByTaskId(String taskId);
+
+    void setNodeSemphoneSet(TaskProcess taskProcess);
+
+    void setPreExecuteNodeSet(TaskProcess taskProcess);
+
+    void setNextExecuteNodeSet(TaskProcess taskProcess);
 
     TaskProcess findByTaskIdAndExecuteNode(String taskId, String executeNode);
 

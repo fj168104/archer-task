@@ -114,9 +114,9 @@ public class TaskInstanceController {
 		}
 		for (String id : ids) {
 			//删除流程数据
-			TaskProcess process = new TaskProcess();
-			process.setTaskId(id);
-			processService.delete(process);
+			for (TaskProcess process : processService.findByTaskId(id)) {
+				processService.delete(process);
+			}
 			//删除实例数据
 			taskInstanceService.delete(id);
 		}
